@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+docker build -t oba-ci .
+
+rm -rf ci-bundle
+mkdir ci-bundle
+
+echo "=== building bundle"
+if ! docker run --rm -v "$(pwd)/ci-bundle:/bundle" oba-ci bash -c 'cd /bundle && \
+       curl --max-time 10 --retry 3 --fail -L -o /tmp/data.zip http://gtfs.halifax.ca/static/google_transit.zip && \
+       java -Xss4m -Xmx3G \
+            -jar /app/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar \
+            /tmp/data.zip .' >/tmp/build-bundle.out 2>&1; then
+    echo " ! bundle building failed"
+    echo "=== bundle build output"
+    tail -n1000 /tmp/build-bundle.out
+    exit 1
+fi
+
+echo "=== running server"
+docker run --name oba-ci -d --rm -v "$(pwd)/ci-bundle:/bundle" -p 8888:8080 oba-ci
+
+echo "=== waiting for successful onebusaway-transit-data-federation-webapp request"
+for i in $(seq 1 60); do
+    curl --max-time 3 --fail http://localhost:8888/onebusaway-transit-data-federation-webapp/ && exit 0
+    sleep 1
+done
+
+echo " ! request to onebusaway-transit-data-federation-webapp never succeeded"
+
+echo "=== docker logs"
+docker logs oba-ci
+
+# TODO: tomcat logs
+
+exit 1
