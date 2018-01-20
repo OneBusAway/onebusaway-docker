@@ -10,7 +10,13 @@ FROM tomcat:8
 ENV JAVA_OPTS="-Xss4m"
 
 RUN mkdir /app
+
 COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar /app
+
 COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp.war /app
 RUN unzip -q /app/onebusaway-transit-data-federation-webapp.war -d /usr/local/tomcat/webapps/onebusaway-transit-data-federation-webapp
 ADD config/onebusaway-transit-data-federation-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml
+
+COPY --from=build /app/onebusaway-api-webapp/target/onebusaway-api-webapp.war /app
+RUN unzip -q /app/onebusaway-api-webapp.war -d /usr/local/tomcat/webapps/onebusaway-api-webapp
+ADD config/onebusaway-api-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml
