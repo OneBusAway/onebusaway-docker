@@ -3,7 +3,7 @@
 FROM maven:3.5.2-jdk-8 as build
 
 RUN git clone --depth 1 https://github.com/OneBusAway/onebusaway-application-modules.git /app
-RUN cd /app && mvn package -Dlicense.skip=true -Dmaven.test.skip=true --quiet
+RUN cd /app && mvn install -Dlicense.skip=true -Dmaven.test.skip=true --quiet
 
 FROM tomcat:8
 
