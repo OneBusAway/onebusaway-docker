@@ -11,6 +11,8 @@ ENV JAVA_OPTS="-Xss4m"
 
 RUN mkdir /app
 
+ADD https://jdbc.postgresql.org/download/postgresql-42.2.1.jar /usr/local/tomcat/lib
+
 COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar /app
 
 COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp.war /app

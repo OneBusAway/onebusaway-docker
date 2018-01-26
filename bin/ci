@@ -27,6 +27,8 @@ check_url() {
     error "request to $name at $url never succeeded"
 }
 
+docker rm -f oba-ci oba-postgres || true
+
 docker build -t oba-ci .
 
 rm -rf ci-bundle
@@ -44,8 +46,26 @@ if ! docker run --rm -v "$(pwd)/ci-bundle:/bundle" oba-ci bash -c 'cd /bundle &&
     exit 1
 fi
 
+echo "=== running postgres"
+docker run --name oba-postgres -d --rm postgres:10
+
+echo "=== creating postgres database"
+postgres_done=0
+for i in $(seq 1 10); do
+    if docker exec oba-postgres createdb -U postgres onebusaway; then
+        postgres_done=1
+        break
+    fi
+    sleep 1
+done
+
+if [ $postgres_done -eq 0 ]; then
+    echo "postgres didn't work"
+    exit 1
+fi
+
 echo "=== running server"
-docker run --name oba-ci -d --rm -v "$(pwd)/ci-bundle:/bundle" -p 8888:8080 oba-ci
+docker run --name oba-ci -d --rm -v "$(pwd)/ci-bundle:/bundle" --link oba-postgres:postgres -p 8888:8080 oba-ci
 
 check_url onebusaway-transit-data-federation-webapp http://localhost:8888/onebusaway-transit-data-federation-webapp/
 check_url onebusaway-api-webapp 'http://localhost:8888/onebusaway-api-webapp/api/where/config.json?key=TEST'

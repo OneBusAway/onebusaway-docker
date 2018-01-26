@@ -8,17 +8,16 @@
   <bean id="apiKeyValidationService" class="org.onebusaway.users.impl.validation.KeyValidationServiceImpl" />
   <!-- Database Configuration -->
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-    <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-    <property name="url" value="jdbc:hsqldb:file:/bundle/org_onebusaway_api_data" />
-    <property name="username" value="sa" />
-    <property name="password" value="" />
+    <property name="driverClassName" value="org.postgresql.Driver" />
+    <property name="url" value="jdbc:postgresql://postgres/onebusaway" />
+    <property name="username" value="postgres" />
   </bean>
   <bean id="agencyMetadataDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-    <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-    <property name="url" value="jdbc:hsqldb:file:/bundle/org_onebusaway_agency_data" />
-    <property name="username" value="sa" />
-    <property name="password" value="" />
+    <property name="driverClassName" value="org.postgresql.Driver" />
+    <property name="url" value="jdbc:postgresql://postgres/onebusaway" />
+    <property name="username" value="postgres" />
   </bean>
+
   <bean id="agencyMetadataSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="dataSource" ref="agencyMetadataDataSource" />
     <property name="annotatedClasses">
@@ -35,12 +34,12 @@
       </props>
     </property>
   </bean>
-  
+
   <!-- Allows the TEST key for OBA API testing.  Should be removed in production -->
   <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
     <property name="key" value="TEST"/>
   </bean>
-  
+
   <!-- iOS Client key -->
   <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
     <property name="key" value="org.onebusaway.iphone"/>
