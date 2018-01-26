@@ -35,9 +35,7 @@
       </props>
     </property>
   </bean>
-  <!-- Service that is used to verify API keys -->
-  <bean id="apiKeyValidationService" class="org.onebusaway.users.impl.validation.KeyValidationServiceImpl" />
-
+  
   <!-- Allows the TEST key for OBA API testing.  Should be removed in production -->
   <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
     <property name="key" value="TEST"/>
