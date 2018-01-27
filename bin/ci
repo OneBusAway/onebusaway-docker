@@ -68,4 +68,4 @@ echo "=== running server"
 docker run --name oba-ci -d --rm -v "$(pwd)/ci-bundle:/bundle" --link oba-postgres:postgres -p 8888:8080 oba-ci
 
 check_url onebusaway-transit-data-federation-webapp http://localhost:8888/onebusaway-transit-data-federation-webapp/
-check_url onebusaway-api-webapp 'http://localhost:8888/onebusaway-api-webapp/api/where/config.json?key=TEST'
+check_url onebusaway-api-webapp 'http://localhost:8888/onebusaway-api-webapp/api/where/agency/Halifax.json?key=TEST'
