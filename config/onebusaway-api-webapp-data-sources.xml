@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+  <!-- Specify our transit data source -->
+  <bean id="transitDataService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+    <property name="serviceUrl" value="http://localhost:8080/onebusaway-transit-data-federation-webapp/remoting/transit-data-service" />
+    <property name="serviceInterface" value="org.onebusaway.transit_data.services.TransitDataService" />
+  </bean>
+  <bean id="apiKeyValidationService" class="org.onebusaway.users.impl.validation.KeyValidationServiceImpl" />
+  <!-- Database Configuration -->
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.postgresql.Driver" />
+    <property name="url" value="jdbc:postgresql://postgres/onebusaway" />
+    <property name="username" value="postgres" />
+  </bean>
+  <bean id="agencyMetadataDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.postgresql.Driver" />
+    <property name="url" value="jdbc:postgresql://postgres/onebusaway" />
+    <property name="username" value="postgres" />
+  </bean>
+
+  <bean id="agencyMetadataSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="agencyMetadataDataSource" />
+    <property name="annotatedClasses">
+      <list>
+        <value>org.onebusaway.agency_metadata.model.AgencyMetadata</value>
+        <value>org.onebusaway.agency_metadata.service.AgencyMetadataDaoImpl</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.connection.pool_size">1</prop>
+        <prop key="hibernate.current_session_context_class">thread</prop>
+        <prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- Allows the TEST key for OBA API testing.  Should be removed in production -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+    <property name="key" value="TEST"/>
+  </bean>
+
+  <!-- iOS Client key -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+    <property name="key" value="org.onebusaway.iphone"/>
+  </bean>
+
+  <!-- Android Client key -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+    <property name="key" value="v1_BktoDJ2gJlu6nLM6LsT9H8IUbWc=cGF1bGN3YXR0c0BnbWFpbC5jb20="/>
+  </bean>
+
+  <!-- Windows Phone Client key -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+    <property name="key" value="v1_C5+aiesgg8DxpmG1yS2F/pj2zHk=c3BoZW5yeUBnbWFpbC5jb20=="/>
+  </bean>
+
+  <!-- Windows 8 Client key -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+    <property name="key" value="693c0a55-9ef0-4302-8bc3-f9b2db93e124"/>
+  </bean>
+
+  <!-- Alexa Skill key -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+   <property name="key" value="e5c0e97a-729d-4fdb-a3ca-2fccb20ac3ab"/>
+  </bean>
+
+  <!-- Pebble Smartwatch key -->
+  <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
+    <property name="key" value="48d59e79-ed33-4be0-9db3-912f8f521fec"/>
+  </bean>
+
+  <bean class="org.onebusaway.container.spring.PropertyOverrideConfigurer">
+    <property name="properties">
+      <props>
+        <prop key="cacheManager.cacheManagerName">org.onebusaway.api_webapp.cacheManager</prop>
+      </props>
+    </property>
+  </bean>
+</beans>
