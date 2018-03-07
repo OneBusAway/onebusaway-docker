@@ -22,3 +22,8 @@ ADD config/onebusaway-transit-data-federation-webapp-data-sources.xml /usr/local
 COPY --from=build /app/onebusaway-api-webapp/target/onebusaway-api-webapp.war /app
 RUN unzip -q /app/onebusaway-api-webapp.war -d /usr/local/tomcat/webapps/onebusaway-api-webapp
 ADD config/onebusaway-api-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml
+
+RUN rm -rf /usr/local/tomcat/webapps/ROOT
+COPY --from=build /app/onebusaway-enterprise-acta-webapp/target/onebusaway-enterprise-acta-webapp.war /app
+RUN unzip -q /app/onebusaway-enterprise-acta-webapp.war -d /usr/local/tomcat/webapps/ROOT
+ADD config/onebusaway-enterprise-acta-webapp-data-sources.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/data-sources.xml
