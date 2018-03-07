@@ -20,7 +20,10 @@ check_url() {
 
     echo "=== waiting for successful $name request"
     for i in $(seq 1 20); do
-        curl --max-time 3 --fail "$url" && return 0
+        if curl --max-time 3 --fail "$url"; then
+            echo # in case the api response didn't have a newline
+            return 0
+        fi
         sleep 1
     done
 
