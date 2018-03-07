@@ -14,7 +14,6 @@
   <bean id="serviceAreaServiceImpl" class="org.onebusaway.presentation.impl.ServiceAreaServiceImpl">
     <property name="calculateDefaultBoundsFromAgencyCoverage" value="true" />
   </bean>
-  <bean id="externalGeocoderImpl" class="org.onebusaway.geocoder.impl.GoogleGeocoderImpl" />
   <bean class="org.onebusaway.container.spring.PropertyOverrideConfigurer">
     <property name="properties">
       <props>
@@ -25,4 +24,6 @@
   <bean id="siriCacheService" class="org.onebusaway.presentation.services.cachecontrol.SiriCacheServiceImpl">
     <property name="disabled" value="true" />
   </bean>
+  <bean id="searchServiceImpl" class="org.onebusaway.presentation.impl.search.SearchServiceImpl" />
+  <bean id="enterpriseGeocoderImpl" class="org.onebusaway.geocoder.enterprise.impl.EnterpriseGoogleGeocoderImpl" />
 </beans>
