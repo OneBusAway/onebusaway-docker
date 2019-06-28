@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  build-bundle:
+    build: .
+    volumes:
+      # Place a single GTFS ZIP file in the `./bundle`
+      # directory, then run this service to build a
+      # bundle from it, output to the same directory
+      - ./bundle:/bundle
+    # Command needs to be wrapped in `sh`, since otherwise
+    # the subshell command doesn't work
+    # Also, the JAR must be executed from within the same
+    # directory as the bundle, or else some necessary files
+    # are not generated
+    command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
+
+  # The `oba` service expects this service to be addressed
+  # as `postgres`, so this name cannot be changed
+  postgres:
+    image: "postgres:10"
+    environment:
+      # These are the settings that the OBA image expects
+      # There is no password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=onebusaway
+    ports:
+      # Use a different port than default, in case the host
+      # is running its own Postgres instance
+      # Can connect to this database from the host, using
+      # psql postgres://postgres@localhost:5433/onebusaway
+      - "5433:5432"
+
+  oba:
+    depends_on:
+      # Automatically bring up the database service first
+      - postgres
+    build: .
+    volumes:
+      # Share the host's `bundle` directory with the
+      # filesystem of the OBA service
+      - ./bundle:/bundle
+    ports:
+      # Access the webapp on your host machine at a path like
+      # http://localhost:8888/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
+      - "8888:8080"
