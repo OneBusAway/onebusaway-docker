@@ -41,7 +41,7 @@ echo "=== building bundle"
 if ! docker run --rm -v "$(pwd)/ci-bundle:/bundle" oba-ci bash -c 'cd /bundle && \
        curl --max-time 10 --retry 3 --fail -L -o /tmp/data.zip http://gtfs.halifax.ca/static/google_transit.zip && \
        java -Xss4m -Xmx3G \
-            -jar /app/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar \
+            -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar \
             /tmp/data.zip .' >/tmp/build-bundle.out 2>&1; then
     echo " ! bundle building failed"
     echo "=== bundle build output"
