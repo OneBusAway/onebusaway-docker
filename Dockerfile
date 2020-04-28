@@ -21,7 +21,7 @@ RUN wget \
 	--directory-prefix /usr/local/tomcat/lib \
 	https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 
-COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar /app
+COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar /app
 
 COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp.war /tmp
 RUN unzip \

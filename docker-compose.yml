@@ -13,7 +13,7 @@ services:
     # Also, the JAR must be executed from within the same
     # directory as the bundle, or else some necessary files
     # are not generated
-    command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.0-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
+    command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
 
   # The `oba` service expects this service to be addressed
   # as `postgres`, so this name cannot be changed
