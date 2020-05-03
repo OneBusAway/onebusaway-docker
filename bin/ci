@@ -50,7 +50,9 @@ if ! docker run --rm -v "$(pwd)/ci-bundle:/bundle" oba-ci bash -c 'cd /bundle &&
 fi
 
 echo "=== running postgres"
-docker run --name oba-postgres -d --rm postgres:10
+# Note that POSTGRES_HOST_AUTH_METHOD=trust is highly insecure and should
+# never be used in production.
+docker run --name oba-postgres -d -e POSTGRES_HOST_AUTH_METHOD=trust --rm postgres:10
 
 echo "=== creating postgres database"
 postgres_done=0
