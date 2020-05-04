@@ -26,4 +26,12 @@
   </bean>
   <bean id="searchServiceImpl" class="org.onebusaway.presentation.impl.search.SearchServiceImpl" />
   <bean id="enterpriseGeocoderImpl" class="org.onebusaway.geocoder.enterprise.impl.EnterpriseGoogleGeocoderImpl" />
+  <bean id="wikiDocumentService" class="org.onebusaway.wiki.xwiki.impl.XWikiDocumentServiceImpl">
+    <property name="xwikiUrl" value="http://example.org/xwiki" />
+  </bean>
+  <bean id="wikiRenderingService" class="org.onebusaway.wiki.xwiki.impl.XWikiRenderingServiceImpl">
+    <property name="wikiDocumentViewUrl" value="view" />
+    <property name="wikiDocumentEditUrl" value="edit" />
+    <property name="wikiAttachmentUrl" value="attach" />
+  </bean>
 </beans>
