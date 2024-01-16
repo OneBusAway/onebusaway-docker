@@ -15,27 +15,34 @@ services:
     # are not generated
     command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
 
-  # The `oba` service expects this service to be addressed
-  # as `postgres`, so this name cannot be changed
-  postgres:
-    image: "postgres:10"
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_server
     environment:
       # These are the settings that the OBA image expects
       # There is no password
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=onebusaway
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
     ports:
-      # Use a different port than default, in case the host
-      # is running its own Postgres instance
-      # Can connect to this database from the host, using
-      # psql postgres://postgres@localhost:5433/onebusaway
-      - "5433:5432"
+      - "3306:3306"
+    volumes:
+      - type: volume
+        source: mysql-data
+        target: /var/lib/mysql
+    restart: always
+
 
   oba:
     depends_on:
       # Automatically bring up the database service first
-      - postgres
+      - mysql
     build: .
+    environment:
+      JDBC_URL: jdbc:mysql://mysql:3306/mydatabase
+      JDBC_USER: user
+      JDBC_PASSWORD: userpassword
     volumes:
       # Share the host's `bundle` directory with the
       # filesystem of the OBA service
@@ -44,3 +51,6 @@ services:
       # Access the webapp on your host machine at a path like
       # http://localhost:8888/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
       - "8888:8080"
+
+volumes:
+  mysql-data:
