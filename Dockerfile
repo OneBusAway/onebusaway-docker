@@ -25,7 +25,7 @@ RUN mkdir /app
 # 	https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 
 COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.1.18-cs-withAllDependencies.jar /app
-COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp-2.1.56-cs.war /tmp
+COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp-2.1.18-cs.war /tmp
 
 RUN unzip \
 	-q \
