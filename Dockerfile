@@ -24,41 +24,29 @@ RUN mkdir /app
 # 	--directory-prefix /usr/local/tomcat/lib \
 # 	https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 
-COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar /app
-COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp.war /tmp
-
-
-# Added 1/13/24
-RUN wget \
-	https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-transit-data-federation-builder/2.1.18-cs/onebusaway-transit-data-federation-builder-2.1.18-cs-withAllDependencies.jar
-
-RUN wget \
-	https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-transit-data-federation-webapp/2.1.18-cs/onebusaway-transit-data-federation-webapp-2.1.18-cs.war
-
-RUN wget \
-	https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-api-webapp/2.1.18-cs/onebusaway-api-webapp-2.1.18-cs.war
-
-RUN wget \
-	https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-enterprise-acta-webapp/2.1.18-cs/onebusaway-enterprise-acta-webapp-2.1.18-cs.war
-
+COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.1.18-cs-withAllDependencies.jar /app
+COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp-2.1.56-cs.war /tmp
 
 RUN unzip \
 	-q \
-	/tmp/onebusaway-transit-data-federation-webapp.war \
+	/tmp/onebusaway-transit-data-federation-webapp-2.1.18-cs.war \
 	-d /usr/local/tomcat/webapps/onebusaway-transit-data-federation-webapp
 COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml
 
-COPY --from=build /app/onebusaway-api-webapp/target/onebusaway-api-webapp.war /tmp
+
+COPY --from=build /app/onebusaway-api-webapp/target/onebusaway-api-webapp-2.1.18-cs.war /tmp
 RUN unzip \
 	-q \
-	/tmp/onebusaway-api-webapp.war \
+	/tmp/onebusaway-api-webapp-2.1.18-cs.war \
 	-d /usr/local/tomcat/webapps/onebusaway-api-webapp
 COPY ./config/onebusaway-api-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml
 
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
-COPY --from=build /app/onebusaway-enterprise-acta-webapp/target/onebusaway-enterprise-acta-webapp.war /tmp
+
+
+# RUN rm -rf /usr/local/tomcat/webapps/ROOT
+COPY --from=build /app/onebusaway-enterprise-acta-webapp/target/onebusaway-enterprise-acta-webapp-2.1.18-cs.war /tmp
 RUN unzip \
 	-q \
-	/tmp/onebusaway-enterprise-acta-webapp.war \
+	/tmp/onebusaway-enterprise-acta-webapp-2.1.18-cs.war \
 	-d /usr/local/tomcat/webapps/ROOT
 COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/data-sources.xml
