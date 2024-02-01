@@ -16,11 +16,9 @@ services:
     command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
 
   mysql:
-    image: mysql:5.7
+    image: mariadb:lts
     container_name: mysql_server
     environment:
-      # These are the settings that the OBA image expects
-      # There is no password
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: user
@@ -33,10 +31,8 @@ services:
         target: /var/lib/mysql
     restart: always
 
-
   oba:
     depends_on:
-      # Automatically bring up the database service first
       - mysql
     build: .
     environment:
@@ -44,13 +40,14 @@ services:
       JDBC_USER: user
       JDBC_PASSWORD: userpassword
     volumes:
-      # Share the host's `bundle` directory with the
-      # filesystem of the OBA service
+      # Share the host's `bundle` and `oba_config' directories
+      # with the filesystem of the OBA service.
       - ./bundle:/bundle
+      - ./oba_config:/oba_config
     ports:
       # Access the webapp on your host machine at a path like
-      # http://localhost:8888/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
-      - "8888:8080"
+      # http://localhost:8080/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
+      - "8080:8080"
 
 volumes:
   mysql-data:

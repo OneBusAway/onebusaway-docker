@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:jee="http://www.springframework.org/schema/jee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/jee
+    http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
+
+  <bean id="transitDataService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+    <property
+      name="serviceUrl"
+      value="http://localhost:8080/onebusaway-transit-data-federation-webapp/remoting/transit-data-service" />
+    <property
+      name="serviceInterface"
+      value="org.onebusaway.transit_data.services.TransitDataService" />
+  </bean>
+
+  <!-- Database Configuration -->
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+    <property name="url" value="jdbc:mysql://mysql:3306/mydatabase" />
+    <property name="username" value="user" />
+    <property name="password" value="userpassword" />
+  </bean>
+
+  <alias name="dataSource" alias="mutableDataSource" />
+
+  <bean id="serviceAreaServiceImpl" class="org.onebusaway.presentation.impl.ServiceAreaServiceImpl">
+    <property name="calculateDefaultBoundsFromAgencyCoverage" value="true" />
+  </bean>
+
+  <bean class="org.onebusaway.container.spring.PropertyOverrideConfigurer">
+    <property name="properties">
+      <props>
+        <prop key="cacheManager.cacheManagerName">org.onebusaway.nyc_webapp.cacheManager</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="siriCacheService" class="org.onebusaway.presentation.services.cachecontrol.SiriCacheServiceImpl">
+    <property name="disabled" value="true" />
+  </bean>
+
+  <bean id="searchServiceImpl" class="org.onebusaway.presentation.impl.search.SearchServiceImpl" />
+  <bean id="enterpriseGeocoderImpl" class="org.onebusaway.geocoder.enterprise.impl.EnterpriseGoogleGeocoderImpl" />
+</beans>
