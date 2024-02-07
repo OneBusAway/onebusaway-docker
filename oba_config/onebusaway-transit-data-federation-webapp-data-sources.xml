@@ -20,19 +20,19 @@
     <property name="order" value="-2" />
     <property name="properties">
       <props>
-        <prop key="bundlePath">/var/lib/obanyc/no-such-dir</prop>
+        <prop key="bundleStoreRoot">/oba/gtfs</prop>
       </props>
     </property>
   </bean>
 
   <bean id="httpServiceClient" class="org.onebusaway.transit_data_federation.util.HttpServiceClientImpl" >
     <constructor-arg type="java.lang.String" value="localhost"/>
-    <constructor-arg type="java.lang.Integer" value="9999" />
-    <constructor-arg type="java.lang.String" value="/api/" />
+    <constructor-arg type="java.lang.Integer" value="8080" />
+    <constructor-arg type="java.lang.String" value="/onebusaway-admin-webapp/api/" />
   </bean>
 
   <bean id="bundleManagementService" class="org.onebusaway.transit_data_federation.impl.bundle.BundleManagementServiceImpl">
-    <property name="bundleStoreRoot" value="/bundle" />
+    <property name="bundleStoreRoot" value="/oba/gtfs" />
     <property name="standaloneMode" value="true" />
   </bean>
 </beans>
