@@ -1,6 +1,6 @@
 FROM tomcat:8.5.98-jdk11-temurin
 
-ARG OBA_VERSION=2.1.18-cs
+ARG OBA_VERSION=2.4.18-cs
 ENV GTFS_URL "https://www.soundtransit.org/GTFS-rail/40_gtfs.zip"
 ENV CATALINA_HOME /usr/local/tomcat
 
