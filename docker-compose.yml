@@ -1,19 +1,19 @@
 version: "3"
 
 services:
-  build-bundle:
-    build: .
-    volumes:
-      # Place a single GTFS ZIP file in the `./bundle`
-      # directory, then run this service to build a
-      # bundle from it, output to the same directory
-      - ./bundle:/bundle
-    # Command needs to be wrapped in `sh`, since otherwise
-    # the subshell command doesn't work
-    # Also, the JAR must be executed from within the same
-    # directory as the bundle, or else some necessary files
-    # are not generated
-    command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
+  # build-bundle:
+  #   build: .
+  #   volumes:
+  #     # Place a single GTFS ZIP file in the `./bundle`
+  #     # directory, then run this service to build a
+  #     # bundle from it, output to the same directory
+  #     - ./bundle:/bundle
+  #   # Command needs to be wrapped in `sh`, since otherwise
+  #   # the subshell command doesn't work
+  #   # Also, the JAR must be executed from within the same
+  #   # directory as the bundle, or else some necessary files
+  #   # are not generated
+  #   command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
 
   mysql:
     image: mariadb:lts
