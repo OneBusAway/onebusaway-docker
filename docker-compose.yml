@@ -15,30 +15,32 @@ services:
   #   # are not generated
   #   command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
 
-  mysql:
-    image: mariadb:lts
-    container_name: mysql_server
+  oba_database:
+    image: mysql:8.3
+    container_name: oba_database
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpassword
+      MYSQL_ROOT_PASSWORD: Ins3cure!
+      MYSQL_DATABASE: oba_database
+      MYSQL_USER: oba_user
+      MYSQL_PASSWORD: oba_password
     ports:
       - "3306:3306"
     volumes:
+      - ./db_config:/docker-entrypoint-initdb.d
       - type: volume
         source: mysql-data
         target: /var/lib/mysql
     restart: always
 
-  oba:
+  oba_app:
+    container_name: oba_app
     depends_on:
-      - mysql
+      - oba_database
     build: .
     environment:
-      JDBC_URL: jdbc:mysql://mysql:3306/mydatabase
-      JDBC_USER: user
-      JDBC_PASSWORD: userpassword
+      JDBC_URL: jdbc:mysql://oba_database:3306/oba_database
+      JDBC_USER: oba_user
+      JDBC_PASSWORD: oba_password
     volumes:
       # Share the host's `bundle` and `oba_config' directories
       # with the filesystem of the OBA service.
@@ -48,6 +50,7 @@ services:
       # Access the webapp on your host machine at a path like
       # http://localhost:8080/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
       - "8080:8080"
+    # restart: always
 
 volumes:
   mysql-data:

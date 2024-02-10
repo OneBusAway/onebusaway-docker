@@ -26,7 +26,7 @@ WORKDIR /oba/gtfs
 
 RUN wget -O gtfs.zip ${GTFS_URL}
 
-RUN java -jar -Xss4m -Xmx1g /oba/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar /oba/gtfs/gtfs.zip /oba/gtfs
+RUN java -jar -Xss1g -Xmx2g /oba/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar /oba/gtfs/gtfs.zip /oba/gtfs
 
 # Tomcat Configuration
 
@@ -35,15 +35,18 @@ WORKDIR $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp
 RUN mv /oba/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
 COPY /oba_config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 
 RUN mkdir $CATALINA_HOME/webapps/onebusaway-api-webapp
 WORKDIR $CATALINA_HOME/webapps/onebusaway-api-webapp
 RUN mv /oba/onebusaway-api-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-api-webapp-${OBA_VERSION}.war
 COPY ./oba_config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 
 RUN mkdir $CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp
 WORKDIR $CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp
 RUN mv /oba/onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
 COPY ./oba_config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
