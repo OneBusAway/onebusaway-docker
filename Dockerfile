@@ -1,7 +1,7 @@
 FROM tomcat:8.5.98-jdk11-temurin
 
 ARG OBA_VERSION=2.4.18-cs
-ENV GTFS_URL "https://www.soundtransit.org/GTFS-rail/40_gtfs.zip"
+ENV GTFS_URL "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip"
 ENV CATALINA_HOME /usr/local/tomcat
 
 RUN mkdir /oba
