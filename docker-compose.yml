@@ -26,7 +26,6 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db_config:/docker-entrypoint-initdb.d
       - type: volume
         source: mysql-data
         target: /var/lib/mysql
@@ -38,13 +37,13 @@ services:
       - oba_database
     build: .
     environment:
+      JDBC_DRIVER: com.mysql.cj.jdbc.Driver
       JDBC_URL: jdbc:mysql://oba_database:3306/oba_database
-      JDBC_USER: oba_user
+      JDBC_USERNAME: oba_user
       JDBC_PASSWORD: oba_password
     volumes:
       # Share the host's `bundle` and `oba_config' directories
       # with the filesystem of the OBA service.
-      - ./bundle:/bundle
       - ./oba_config:/oba_config
     ports:
       # Access the webapp on your host machine at a path like
