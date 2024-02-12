@@ -48,6 +48,14 @@
     </property>
   </bean>
 
+  <bean id="customRouteSort" class="org.onebusaway.transit_data.model.RouteSort">
+    <constructor-arg name="agencySortConfiguration" >
+      <map>
+      </map>
+    </constructor-arg>
+    <constructor-arg type="java.lang.String" value="" />
+  </bean>
+
   <!-- Allows the TEST key for OBA API testing.  Should be removed in production -->
   <bean class="org.onebusaway.users.impl.CreateApiKeyAction">
     <property name="key" value="TEST"/>
