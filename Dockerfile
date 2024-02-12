@@ -1,46 +1,52 @@
-# Maven fails to build the OBA modules under JDK 9
-FROM maven:3-jdk-8 AS build
+FROM tomcat:8.5.98-jdk11-temurin
 
-RUN git clone \
-	--depth 1 \
-	https://github.com/OneBusAway/onebusaway-application-modules.git \
-	/app
-WORKDIR /app
-RUN mvn install \
-	--quiet \
-	-D license.skip=true \
-	-D maven.test.skip=true
+ARG OBA_VERSION=2.4.18-cs
+ENV GTFS_URL "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip"
+ENV CATALINA_HOME /usr/local/tomcat
 
-FROM tomcat:8
+RUN mkdir /oba
+WORKDIR /oba
 
-ENV JAVA_OPTS="-Xss4m"
+# OBA WAR and JAR files
+RUN wget "https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-transit-data-federation-builder/${OBA_VERSION}/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar"
+RUN wget "https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-transit-data-federation-webapp/${OBA_VERSION}/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war"
+RUN wget "https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-api-webapp/${OBA_VERSION}/onebusaway-api-webapp-${OBA_VERSION}.war"
+RUN wget "https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-enterprise-acta-webapp/${OBA_VERSION}/onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war"
 
-RUN mkdir /app
+# MySQL Connector
+RUN mkdir -p $CATALINA_HOME/lib
+WORKDIR $CATALINA_HOME/lib
+RUN wget "https://cdn.mysql.com/Downloads/Connector-J/mysql-connector-j-8.3.0.tar.gz"
+RUN tar -zxvf mysql-connector-j-8.3.0.tar.gz
+RUN mv mysql-connector-j-8.3.0/mysql-connector-j-8.3.0.jar .
 
-RUN wget \
-	--directory-prefix /usr/local/tomcat/lib \
-	https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
+# Build Bundle from GTFS Data
+RUN mkdir /oba/gtfs
+WORKDIR /oba/gtfs
 
-COPY --from=build /app/onebusaway-transit-data-federation-builder/target/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar /app
+RUN wget -O gtfs.zip ${GTFS_URL}
 
-COPY --from=build /app/onebusaway-transit-data-federation-webapp/target/onebusaway-transit-data-federation-webapp.war /tmp
-RUN unzip \
-	-q \
-	/tmp/onebusaway-transit-data-federation-webapp.war \
-	-d /usr/local/tomcat/webapps/onebusaway-transit-data-federation-webapp
-COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml
+RUN java -jar -Xss1g -Xmx2g /oba/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar /oba/gtfs/gtfs.zip /oba/gtfs
 
-COPY --from=build /app/onebusaway-api-webapp/target/onebusaway-api-webapp.war /tmp
-RUN unzip \
-	-q \
-	/tmp/onebusaway-api-webapp.war \
-	-d /usr/local/tomcat/webapps/onebusaway-api-webapp
-COPY ./config/onebusaway-api-webapp-data-sources.xml /usr/local/tomcat/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml
+# Tomcat Configuration
 
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
-COPY --from=build /app/onebusaway-enterprise-acta-webapp/target/onebusaway-enterprise-acta-webapp.war /tmp
-RUN unzip \
-	-q \
-	/tmp/onebusaway-enterprise-acta-webapp.war \
-	-d /usr/local/tomcat/webapps/ROOT
-COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/data-sources.xml
+RUN mkdir $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp
+WORKDIR $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp
+RUN mv /oba/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war .
+RUN jar xvf onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
+COPY /oba_config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
+
+RUN mkdir $CATALINA_HOME/webapps/onebusaway-api-webapp
+WORKDIR $CATALINA_HOME/webapps/onebusaway-api-webapp
+RUN mv /oba/onebusaway-api-webapp-${OBA_VERSION}.war .
+RUN jar xvf onebusaway-api-webapp-${OBA_VERSION}.war
+COPY ./oba_config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
+
+RUN mkdir $CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp
+WORKDIR $CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp
+RUN mv /oba/onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war .
+RUN jar xvf onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
+COPY ./oba_config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
