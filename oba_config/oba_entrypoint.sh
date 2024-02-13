@@ -40,5 +40,4 @@ sed -i \
     "s|#JDBC_PASSWORD#|${JDBC_PASSWORD}|g" \
     /usr/local/tomcat/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml
 
-# y u no work?
-exec "/usr/local/tomcat/bin/catalina.sh run"
+exec /usr/local/tomcat/bin/catalina.sh run
