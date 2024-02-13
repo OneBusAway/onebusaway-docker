@@ -33,7 +33,7 @@ RUN mkdir $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp
 WORKDIR $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp
 RUN mv /oba/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
-COPY /oba_config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY ./oba_config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 
 RUN mkdir $CATALINA_HOME/webapps/onebusaway-api-webapp
@@ -42,3 +42,7 @@ RUN mv /oba/onebusaway-api-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-api-webapp-${OBA_VERSION}.war
 COPY ./oba_config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
+
+COPY ./oba_config/oba_entrypoint.sh /usr/local/bin/oba_entrypoint.sh
+RUN chmod +x /usr/local/bin/oba_entrypoint.sh
+CMD ["/usr/local/bin/oba_entrypoint.sh"]
