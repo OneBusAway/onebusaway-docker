@@ -30,7 +30,6 @@ services:
       - oba_database
     build: ./oba
     environment:
-      JDBC_DRIVER: com.mysql.cj.jdbc.Driver
       JDBC_URL: jdbc:mysql://oba_database:3306/oba_database
       JDBC_USERNAME: oba_user
       JDBC_PASSWORD: oba_password
