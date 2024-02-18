@@ -20,7 +20,7 @@
     <property name="order" value="-2" />
     <property name="properties">
       <props>
-        <prop key="bundleStoreRoot">/oba/gtfs</prop>
+        <prop key="bundleStoreRoot">/bundle</prop>
       </props>
     </property>
   </bean>
@@ -32,7 +32,7 @@
   </bean>
 
   <bean id="bundleManagementService" class="org.onebusaway.transit_data_federation.impl.bundle.BundleManagementServiceImpl">
-    <property name="bundleStoreRoot" value="/oba/gtfs" />
+    <property name="bundleStoreRoot" value="/bundle" />
     <property name="standaloneMode" value="true" />
   </bean>
 </beans>

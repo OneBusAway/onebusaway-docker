@@ -1,19 +1,12 @@
 version: "3"
 
 services:
-  # build-bundle:
-  #   build: .
-  #   volumes:
-  #     # Place a single GTFS ZIP file in the `./bundle`
-  #     # directory, then run this service to build a
-  #     # bundle from it, output to the same directory
-  #     - ./bundle:/bundle
-  #   # Command needs to be wrapped in `sh`, since otherwise
-  #   # the subshell command doesn't work
-  #   # Also, the JAR must be executed from within the same
-  #   # directory as the bundle, or else some necessary files
-  #   # are not generated
-  #   command: ["sh", "-c", "cd /bundle && java -Xss4m -Xmx3G -jar /app/onebusaway-transit-data-federation-builder-2.0.1-SNAPSHOT-withAllDependencies.jar $$(ls /bundle/*.zip) ."]
+  oba_bundler:
+    build: ./bundler
+    volumes:
+      - ./bundle:/bundle
+    environment:
+      - GTFS_URL
 
   oba_database:
     image: mysql:8.3
@@ -35,16 +28,16 @@ services:
     container_name: oba_app
     depends_on:
       - oba_database
-    build: .
+    build: ./oba
     environment:
       JDBC_DRIVER: com.mysql.cj.jdbc.Driver
       JDBC_URL: jdbc:mysql://oba_database:3306/oba_database
       JDBC_USERNAME: oba_user
       JDBC_PASSWORD: oba_password
     volumes:
-      # Share the host's `bundle` and `oba_config' directories
+      # Share the host's `bundle` directory
       # with the filesystem of the OBA service.
-      - ./oba_config:/oba_config
+      - ./bundle:/bundle
     ports:
       # Access the webapp on your host machine at a path like
       # http://localhost:8080/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
