@@ -30,9 +30,9 @@ services:
       - oba_database
     build: ./oba
     environment:
-      JDBC_URL: jdbc:mysql://oba_database:3306/oba_database
-      JDBC_USERNAME: oba_user
-      JDBC_PASSWORD: oba_password
+      - db.url=jdbc:mysql://oba_database:3306/oba_database
+      - db.user=oba_user
+      - db.password=oba_password
     volumes:
       # Share the host's `bundle` directory
       # with the filesystem of the OBA service.
