@@ -27,9 +27,9 @@
   <!-- Database Configuration -->
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-    <property name="url" value="${db.url}" />
-    <property name="username" value="${db.user}" />
-    <property name="password" value="${db.password}" />
+    <property name="url" value="${JDBC_URL}" />
+    <property name="username" value="${JDBC_USER}" />
+    <property name="password" value="${JDBC_PASSWORD}" />
   </bean>
 
   <alias name="dataSource" alias="mutableDataSource" />
