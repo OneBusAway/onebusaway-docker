@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: oba
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oba-database-deployment
+  namespace: oba
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oba-database
+  template:
+    metadata:
+      labels:
+        app: oba-database
+    spec:
+      containers:
+        - name: oba-database
+          image: mysql:8.3
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oba-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: oba_database
+            - name: MYSQL_USER
+              value: oba_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oba-secrets
+                  key: MYSQL_PASSWORD
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-data
+      volumes:
+        - name: mysql-data
+          hostPath:
+            path: /var/lib/oba/mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oba-database
+  namespace: oba
+spec:
+  selector:
+    app: oba-database
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oba-app-deployment
+  namespace: oba
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oba-app
+  template:
+    metadata:
+      labels:
+        app: oba-app
+    spec:
+      initContainers:
+        - name: oba-bundler
+          image: oba/bundler:test
+          env:
+            - name: GTFS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: oba-configs
+                  key: GTFS_URL
+          volumeMounts:
+            - mountPath: /bundle
+              name: bundle-volume
+      containers:
+        - name: oba-app
+          image: oba/app:test
+          env:
+            - name: JDBC_URL
+              value: jdbc:mysql://oba-database.oba.svc.cluster.local:3306/oba_database
+            - name: JDBC_USER
+              value: oba_user
+            - name: JDBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oba-secrets
+                  key: JDBC_PASSWORD
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /bundle
+              name: bundle-volume
+      volumes:
+        - name: bundle-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oba-secrets
+  namespace: oba
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: SW5zM2N1cmUh
+  MYSQL_PASSWORD: b2JhX3Bhc3N3b3Jk
+  JDBC_PASSWORD: b2JhX3Bhc3N3b3Jk
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oba-configs
+  namespace: oba
+data:
+  GTFS_URL: https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip
