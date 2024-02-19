@@ -1,0 +1,41 @@
+name: Validate Pull Request
+
+on:
+  pull_request: []
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v1
+
+      - name: Docker Compose up oba_bundler
+        run: docker-compose up oba_bundler
+
+      - name: Docker Compose up oba_app
+        run: |
+          docker-compose up oba_app
+          sleep 30
+
+      - name: Validate script execution
+        run: |
+          success=false
+          for i in {1..10}; do
+            if ./bin/validate.sh; then
+              echo "Validation succeeded on attempt $i"
+              success=true
+              break
+            else
+              echo "Validation failed on attempt $i, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          if [ "$success" = false ]; then
+            echo "Validation failed after 10 attempts"
+            exit 1
+          fi
+        shell: bash
