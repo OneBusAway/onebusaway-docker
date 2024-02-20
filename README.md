@@ -55,3 +55,49 @@ A database port is open to your host machine, so you can connect to it programma
 ```bash
 mysql -u oba_user -p -h localhost:3306
 ```
+
+## Running in Kubernetes
+
+### Creating the docker images
+
+1. Build the bundler image:
+
+```bash
+docker build ./bundler -t oba/bundler:test
+```
+
+2. Build the app image:
+
+```bash
+docker build ./oba -t oba/app:test
+```
+
+### Creating the kubernetes resources:
+
+Apply the kubernetes resources in oba.yaml
+
+```bash
+kubectl apply -f oba.yaml
+```
+
+The YAML file deploys the OneBusAway application and a MySQL database within a dedicated oba namespace in Kubernetes. It also sets up a secret for sensitive data and a ConfigMap for GTFS data URL, while exposing the database as a service for other pods to access.
+
+You can portforward the oba app to your localhost using:
+
+```bash
+kubectl port-forward deploy/oba-app-deployment -n oba 8080:8080
+```
+
+### Inspecting the database
+
+You can portforward the service to your localhost using:
+
+```bash
+kubectl port-forward service/oba-database -n oba 3306:3306
+```
+
+Then you can connect to it programmatically using `mysql`:
+
+```bash
+mysql -u oba_user -p -h localhost:3306
+```
