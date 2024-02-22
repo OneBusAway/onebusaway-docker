@@ -1,5 +1,8 @@
 FROM tomcat:8.5.98-jdk11-temurin
 
+# Create a non-root user
+RUN groupadd -r oba && useradd --no-log-init -r -g oba oba
+
 ARG OBA_VERSION=2.4.18-cs
 ENV OBA_VERSION_ENV=$OBA_VERSION
 
@@ -13,7 +16,7 @@ WORKDIR /oba/bin
 
 COPY ./build_bundle.sh .
 
-CMD /oba/bin/build_bundle.sh ${OBA_VERSION_ENV}
+# Switch to non-root user
+USER oba
 
-# for debugging
-# CMD ["tail", "-f", "/dev/null"]
+# Continue with the rest of the Dockerfile as the non-root user
