@@ -19,4 +19,7 @@ COPY ./build_bundle.sh .
 # Switch to non-root user
 USER oba
 
-# Continue with the rest of the Dockerfile as the non-root user
+CMD /oba/bin/build_bundle.sh ${OBA_VERSION_ENV}
+
+# for debugging
+# CMD ["tail", "-f", "/dev/null"]
