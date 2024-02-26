@@ -4,9 +4,12 @@ This repository contains scripts and configuration for building version 2 of the
 [OneBusAway Application Suite](https://github.com/OneBusAway/onebusaway-application-modules)
 for use with [Docker](https://www.docker.com/).
 
-## BROKEN: CI and functionality demonstration
+## Published Images
 
-A demonstration of the functionality using only basic Docker can be seen by executing the `./bin/ci` script. This demo runs with a GTFS feed from Halifax, Nova Scotia.
+You can find the latest published Docker images on Docker Hub:
+
+* [onebusaway-bundle-builder](https://hub.docker.com/r/aaronbrethorst/onebusaway-bundle-builder) - This image is built from the `bundler` directory and contains the functionality needed to create a transit data bundle from a GTFS feed.
+* [onebusaway-api-webapp](https://hub.docker.com/r/aaronbrethorst/onebusaway-api-webapp) - This image is built from the `oba` directory and contains the functionality needed to run the OBA API webapp.
 
 ## Running locally
 
@@ -38,13 +41,11 @@ docker-compose up oba_app
 
 You will then have three webapps available:
 
-- API, hosted at `http://localhost:8888/onebusaway-api-webapp/api?key=TEST`
-  - an example call could be to `http://localhost:8888/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST`, which should show metadata about the agency you loaded
-  - the test/demo API key is set in `./config/onebusaway-api-webapp-data-sources.xml`; this can be changed as needed, and should be deleted before use in production
-- Transit Data Federation, hosted at `http://localhost:8888/onebusaway-transit-data-federation-webapp/`
-- Enterprise Interface, hosted at `http://localhost:8888/routes/index`
+- API, hosted at `http://localhost:8080/onebusaway-api-webapp/api?key=TEST`
+  - an example call could be to `http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST`, which should show metadata about the agency you loaded
+  - the test/demo API key is set in `./oba/config/onebusaway-api-webapp-data-sources.xml`; this can be changed as needed, and should be deleted before use in production
 
-When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker-compose down -v` and then `docker-compose up oba` to refresh the Docker containers and services.
+When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker-compose down -v` and then `docker-compose up oba_app` to refresh the Docker containers and services.
 
 ### Inspecting the database
 
@@ -72,9 +73,9 @@ docker build ./bundler -t oba/bundler:test
 docker build ./oba -t oba/app:test
 ```
 
-### Creating the kubernetes resources:
+### Creating the Kubernetes resources:
 
-Apply the kubernetes resources in oba.yaml
+Apply the Kubernetes resources in oba.yaml
 
 ```bash
 kubectl apply -f oba.yaml
