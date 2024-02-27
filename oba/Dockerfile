@@ -3,6 +3,13 @@ FROM tomcat:8.5.98-jdk11-temurin
 ENV CATALINA_HOME /usr/local/tomcat
 ARG OBA_VERSION=2.4.18-cs
 
+ARG GID=1000
+ARG UID=1000
+ARG GROUP=oba_group
+ARG USER=oba_user
+
+RUN groupadd -g ${GID} ${GROUP} && useradd -m -u ${UID} -g ${GID} ${USER}
+
 # MySQL Connector
 WORKDIR $CATALINA_HOME/lib
 RUN wget "https://cdn.mysql.com/Downloads/Connector-J/mysql-connector-j-8.3.0.tar.gz" \
@@ -43,3 +50,10 @@ RUN rm onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
 COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
+
+RUN chown -R ${USER}:${GROUP} ${CATALINA_HOME} \
+ && chown -R ${USER}:${GROUP} ${CATALINA_HOME}/lib \
+ && chown -R ${USER}:${GROUP} /oba/libs \
+ && chown -R ${USER}:${GROUP} /oba/webapps
+
+USER oba_user
