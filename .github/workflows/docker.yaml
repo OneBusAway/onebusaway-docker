@@ -48,5 +48,5 @@ jobs:
           push: true
           # for versioning, use the git sha
           tags: |
-            aaronbrethorst/${{ matrix.name }}:latest
-            aaronbrethorst/${{ matrix.name }}:${{ github.sha }}
+            opentransitsoftwarefoundation/${{ matrix.name }}:latest
+            opentransitsoftwarefoundation/${{ matrix.name }}:${{ github.sha }}
