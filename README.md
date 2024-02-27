@@ -8,8 +8,8 @@ for use with [Docker](https://www.docker.com/).
 
 You can find the latest published Docker images on Docker Hub:
 
-* [onebusaway-bundle-builder](https://hub.docker.com/r/aaronbrethorst/onebusaway-bundle-builder) - This image is built from the `bundler` directory and contains the functionality needed to create a transit data bundle from a GTFS feed.
-* [onebusaway-api-webapp](https://hub.docker.com/r/aaronbrethorst/onebusaway-api-webapp) - This image is built from the `oba` directory and contains the functionality needed to run the OBA API webapp.
+* [onebusaway-bundle-builder](https://hub.docker.com/r/opentransitsoftwarefoundation/onebusaway-bundle-builder) - This image is built from the `bundler` directory and contains the functionality needed to create a transit data bundle from a GTFS feed.
+* [onebusaway-api-webapp](https://hub.docker.com/r/opentransitsoftwarefoundation/onebusaway-api-webapp) - This image is built from the `oba` directory and contains the functionality needed to run the OBA API webapp.
 
 ## Running locally
 
