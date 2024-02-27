@@ -48,5 +48,5 @@ jobs:
           push: true
           # for versioning, use the git sha
           tags: |
-            altonhe/${{ matrix.name }}:latest
-            altonhe/${{ matrix.name }}:${{ github.sha }}
+            aaronbrethorst/${{ matrix.name }}:latest
+            aaronbrethorst/${{ matrix.name }}:${{ github.sha }}
