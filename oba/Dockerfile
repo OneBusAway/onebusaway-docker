@@ -3,6 +3,19 @@ FROM tomcat:8.5.98-jdk11-temurin
 ENV CATALINA_HOME /usr/local/tomcat
 ARG OBA_VERSION=2.4.18-cs
 
+ARG GID=1000
+ARG UID=1000
+ARG GROUP=oba_group
+ARG USER=oba_user
+
+RUN groupadd -g $GID $GROUP && \
+    useradd -d /home/$USER -u $UID -m -s /bin/bash -g $GROUP $USER && \
+    chown -R $USER:$GROUP $CATALINA_HOME && \
+    mkdir -p /var/log/tomcat8 && \
+    chown -R $USER:$GROUP /var/log/tomcat8
+
+USER $USER
+
 # MySQL Connector
 WORKDIR $CATALINA_HOME/lib
 RUN wget "https://cdn.mysql.com/Downloads/Connector-J/mysql-connector-j-8.3.0.tar.gz" \
