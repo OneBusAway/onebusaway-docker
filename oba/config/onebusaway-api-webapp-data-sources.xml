@@ -19,14 +19,14 @@
 
   <!-- Database Configuration -->
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-    <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+    <property name="driverClassName" value="${JDBC_DRIVER}" />
     <property name="url" value="${JDBC_URL}" />
     <property name="username" value="${JDBC_USER}" />
     <property name="password" value="${JDBC_PASSWORD}" />
   </bean>
 
   <bean id="agencyMetadataDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-    <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+    <property name="driverClassName" value="${JDBC_DRIVER}" />
     <property name="url" value="${JDBC_URL}" />
     <property name="username" value="${JDBC_USER}" />
     <property name="password" value="${JDBC_PASSWORD}" />
@@ -42,6 +42,7 @@
     </property>
     <property name="hibernateProperties">
       <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
         <prop key="hibernate.connection.pool_size">1</prop>
         <prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
       </props>
