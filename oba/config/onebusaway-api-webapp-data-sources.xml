@@ -66,6 +66,10 @@
     <property name="key" value="v1_BktoDJ2gJlu6nLM6LsT9H8IUbWc=cGF1bGN3YXR0c0BnbWFpbC5jb20="/>
   </bean>
 
+  <!-- Allows the TEST key for OBA API testing.  Automated handled in `bootstrap.sh` -->
+  <bean id="testAPIKey" class="org.onebusaway.users.impl.CreateApiKeyAction">
+  </bean>
+
   <bean class="org.onebusaway.container.spring.PropertyOverrideConfigurer">
     <property name="properties">
       <props>

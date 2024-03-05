@@ -28,7 +28,11 @@ services:
     container_name: oba_app
     depends_on:
       - oba_database
-    build: ./oba
+    build:
+      context: ./oba
+      # For test only, remove in production
+      args:
+        - TEST_API_KEY=TEST
     environment:
       - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
       - JDBC_USER=oba_user

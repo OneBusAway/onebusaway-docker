@@ -46,6 +46,15 @@ RUN cp /oba/libs/onebusaway-api-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-api-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-api-webapp-${OBA_VERSION}.war
 COPY ./config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+# Append Test API Key dynamically
+ARG TEST_API_KEY
+ENV TEST_API_KEY=${TEST_API_KEY}
+COPY bootstrap.sh .
+USER root
+RUN chmod +x bootstrap.sh
+RUN apt-get update -y && apt-get install -y xmlstarlet && apt-get clean
+USER $USER
+RUN ./bootstrap.sh
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-api-webapp $CATALINA_HOME/webapps
 

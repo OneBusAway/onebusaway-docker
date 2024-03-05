@@ -31,28 +31,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      # Add test API key to the OBA service
-      - name: Patch XML
-        uses: jannekem/run-python-script-action@v1
-        with:
-          script: |
-            import xml.etree.ElementTree as ET
-            f = './oba/config/onebusaway-api-webapp-data-sources.xml'
-            ET.register_namespace('', "http://www.springframework.org/schema/beans")
-            tree = ET.parse(f)
-            root = tree.getroot()
-            new_node = ET.Element('bean')
-            new_node.set('class', 'org.onebusaway.users.impl.CreateApiKeyAction')
-            property_node = ET.SubElement(new_node, 'property')
-            property_node.set('name', 'key')
-            property_node.set('value', 'TEST')
-            root.append(new_node)
-            tree.write(f)
-
       - name: Docker Compose up
         run: docker-compose up -d
 
