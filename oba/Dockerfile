@@ -53,8 +53,8 @@ COPY bootstrap.sh .
 USER root
 RUN chmod +x bootstrap.sh
 RUN apt-get update -y && apt-get install -y xmlstarlet && apt-get clean
-USER $USER
 RUN ./bootstrap.sh
+USER $USER
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-api-webapp $CATALINA_HOME/webapps
 
