@@ -1,6 +1,6 @@
 #!/bin/bash
 
-XML_FILE="./WEB-INF/classes/data-sources.xml"
+XML_FILE="./config/onebusaway-api-webapp-data-sources.xml"
 NAMESPACE_PREFIX="x"
 NAMESPACE_URI="http://www.springframework.org/schema/beans"
 BEAN_ID="testAPIKey"
