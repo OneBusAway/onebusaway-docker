@@ -1,3 +1,16 @@
+FROM alpine:latest as builder
+# Append Test API Key dynamically
+ARG TEST_API_KEY
+ENV TEST_API_KEY=${TEST_API_KEY}
+
+WORKDIR /oba
+COPY bootstrap.sh .
+COPY ./config ./config
+RUN chmod +x bootstrap.sh
+RUN apk update && apk add --no-cache bash && apk add --no-cache xmlstarlet
+RUN ./bootstrap.sh
+
+
 FROM tomcat:8.5.98-jdk11-temurin
 
 ENV CATALINA_HOME /usr/local/tomcat
@@ -45,7 +58,7 @@ WORKDIR /oba/webapps/onebusaway-api-webapp
 RUN cp /oba/libs/onebusaway-api-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-api-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-api-webapp-${OBA_VERSION}.war
-COPY ./config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY --from=builder /oba/config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-api-webapp $CATALINA_HOME/webapps
 
