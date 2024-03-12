@@ -3,6 +3,22 @@ FROM alpine:latest as builder
 ARG TEST_API_KEY
 ENV TEST_API_KEY=${TEST_API_KEY}
 
+# GTFS Realtime URLs
+ARG TRIP_UPDATES_URL
+ENV TRIP_UPDATES_URL=${TRIP_UPDATES_URL}
+
+ARG VEHICLE_POSITIONS_URL
+ENV VEHICLE_POSITIONS_URL=${VEHICLE_POSITIONS_URL}
+
+ARG ALERTS_URL
+ENV ALERTS_URL=${ALERTS_URL}
+
+ARG REFRESH_INTERVAL
+ENV REFRESH_INTERVAL=${REFRESH_INTERVAL}
+
+ARG AGENCY_ID
+ENV AGENCY_ID=${AGENCY_ID}
+
 WORKDIR /oba
 COPY bootstrap.sh .
 COPY ./config ./config
@@ -50,7 +66,7 @@ WORKDIR /oba/webapps/onebusaway-transit-data-federation-webapp
 RUN cp /oba/libs/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
-COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY --from=builder /oba/config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-transit-data-federation-webapp $CATALINA_HOME/webapps
 
