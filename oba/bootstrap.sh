@@ -74,4 +74,15 @@ if [ -n "$AGENCY_ID" ]; then
         ${DATA_FEDERATION_XML_FILE}
 fi
 
-
+# Check if the GTFS_RT authentication header is set
+if [ -n "$FEED_API_KEY" ] && [ -n "$FEED_API_VALUE" ]; then
+    echo "FEED_API_KEY and FEED_API_VALUE set to $FEED_API_KEY and $FEED_API_VALUE, setting auth header in data-sources.xml"
+    xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "headersMap" \
+        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']" -t elem -n "map" -v "" \
+        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map" -t elem -n "entry" -v "" \
+        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map/entry" -t attr -n "key" -v "${FEED_API_KEY}" \
+        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map/entry" -t attr -n "value" -v "${FEED_API_VALUE}" \
+        ${DATA_FEDERATION_XML_FILE}
+fi
