@@ -4,12 +4,39 @@ This repository contains scripts and configuration for building version 2 of the
 [OneBusAway Application Suite](https://github.com/OneBusAway/onebusaway-application-modules)
 for use with [Docker](https://www.docker.com/).
 
-## Published Images
+## Deployment
+
+### Published Images
 
 You can find the latest published Docker images on Docker Hub:
 
 * [onebusaway-bundle-builder](https://hub.docker.com/r/opentransitsoftwarefoundation/onebusaway-bundle-builder) - This image is built from the `bundler` directory and contains the functionality needed to create a transit data bundle from a GTFS feed.
 * [onebusaway-api-webapp](https://hub.docker.com/r/opentransitsoftwarefoundation/onebusaway-api-webapp) - This image is built from the `oba` directory and contains the functionality needed to run the OBA API webapp.
+
+### Deployment Parameters
+
+* Database
+  * `JDBC_URL` - The JDBC connection URL for your MySQL database.
+  * `JDBC_USER` - The username for your MySQL database.
+  * `JDBC_PASSWORD` - The password for your MySQL database.
+* GTFS-RT Support (Optional)
+  * `ALERTS_URL` - Service Alerts URL for GTFS-RT.
+  * `TRIP_UPDATES_URL` - Trip Updates URL for GTFS-RT.
+  * `VEHICLE_POSITIONS_URL` - Vehicle Positions URL for GTFS-RT.
+  * `REFRESH_INTERVAL` - Refresh interval in seconds. Usually 10-30.
+  * `AGENCY_ID` - Your GTFS-RT agency ID. Ostensibly the same as your GTFS agency ID.
+  * Authentication (Optional)
+    * Example: Specifying `FEED_API_KEY` = `X-API-KEY` and `FEED_API_VALUE` = `12345` will result in `X-API-KEY: 12345` being passed on every call to your GTFS-RT URLs.
+    * `FEED_API_KEY` - If your GTFS-RT API requires you to pass an authentication header, you can represent the key portion of it by specifying this value.
+    * `FEED_API_VALUE` - If your GTFS-RT API requires you to pass an authentication header, you can represent the value portion of it by specifying this value.
+
+You will also need to create a transit data bundle from a GTFS Zip file. This needs more documentation, but this README does a decent job of outlining the process. The only tricky part is that you need to get it into your running container. Currently, we recommend building it locally, uploading the contents of the `./bundle` directory to S3 or another publicly accessible website, and then downloading it into your container. Obviously, this needs some improvement.
+
+### Deploy to Render
+
+[Render](https://www.render.com) is an easy-to-use Platform-as-a-Service (PaaS) provider. You can host OneBusAway on Render by either manually configuring it or by clicking the button below.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/oneBusAway/onebusaway-docker/)
 
 ## Running locally
 
