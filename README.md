@@ -36,7 +36,7 @@ You will then have three webapps available:
 
 - API, hosted at `http://localhost:8080/onebusaway-api-webapp/api?key=TEST`
   - an example call could be to `http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST`, which should show metadata about the agency you loaded
-  - the test/demo API key is set in `./oba/config/onebusaway-api-webapp-data-sources.xml`; this can be changed as needed, and should be deleted before use in production
+  - the test/demo API key is automatically handled in `oba/bootstrap.sh`, you can change it by setting the `TEST_API_KEY` build args in the `oba_app` service in `docker-compose.yml`
 
 When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker-compose down -v` and then `docker-compose up oba_app` to refresh the Docker containers and services.
 
