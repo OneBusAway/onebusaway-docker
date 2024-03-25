@@ -30,59 +30,96 @@ if [ -z "$TRIP_UPDATES_URL" ] && [ -z "$VEHICLE_POSITIONS_URL" ] && [ -z "$ALERT
     xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
         -d "//${NAMESPACE_PREFIX}:bean[@class=${DATA_SOURCE_CLASS}]" \
         ${DATA_FEDERATION_XML_FILE}
-    exit 0
+
+else
+    echo "GTFS-RT related environment variables are set. Setting them in data-sources.xml"
+    if [ -n "$TRIP_UPDATES_URL" ]; then
+        echo "TRIP_UPDATES_URL set to $TRIP_UPDATES_URL, setting trip updates URL in data-sources.xml"
+        xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "tripUpdatesUrl" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='tripUpdatesUrl']" -t attr -n "value" -v "${TRIP_UPDATES_URL}" \
+            ${DATA_FEDERATION_XML_FILE}
+    fi
+    if [ -n "$VEHICLE_POSITIONS_URL" ]; then
+        echo "VEHICLE_POSITIONS_URL set to $VEHICLE_POSITIONS_URL, setting vehicle positions URL in data-sources.xml"
+        xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "vehiclePositionsUrl" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='vehiclePositionsUrl']" -t attr -n "value" -v "${VEHICLE_POSITIONS_URL}" \
+            ${DATA_FEDERATION_XML_FILE}
+    fi
+    if [ -n "$ALERTS_URL" ]; then
+        echo "ALERTS_URL set to $ALERTS_URL, setting alerts URL in data-sources.xml"
+        xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "alertsUrl" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='alertsUrl']" -t attr -n "value" -v "${ALERTS_URL}" \
+            ${DATA_FEDERATION_XML_FILE}
+    fi
+    if [ -n "$REFRESH_INTERVAL" ]; then
+        echo "REFRESH_INTERVAL set to $REFRESH_INTERVAL, setting refresh interval in data-sources.xml"
+        xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "refreshInterval" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='refreshInterval']" -t attr -n "value" -v "${REFRESH_INTERVAL}" \
+            ${DATA_FEDERATION_XML_FILE}
+    fi
+    if [ -n "$AGENCY_ID" ]; then
+        echo "AGENCY_ID set to $AGENCY_ID, setting agency ID in data-sources.xml"
+        xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "agencyId" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='agencyId']" -t attr -n "value" -v "${AGENCY_ID}" \
+            ${DATA_FEDERATION_XML_FILE}
+    fi
+    # Check if the GTFS_RT authentication header is set
+    if [ -n "$FEED_API_KEY" ] && [ -n "$FEED_API_VALUE" ]; then
+        echo "FEED_API_KEY and FEED_API_VALUE set to $FEED_API_KEY and $FEED_API_VALUE, setting auth header in data-sources.xml"
+        xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "headersMap" \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']" -t elem -n "map" -v "" \
+            -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map" -t elem -n "entry" -v "" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map/entry" -t attr -n "key" -v "${FEED_API_KEY}" \
+            -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map/entry" -t attr -n "value" -v "${FEED_API_VALUE}" \
+            ${DATA_FEDERATION_XML_FILE}
+    fi
 fi
 
-if [ -n "$TRIP_UPDATES_URL" ]; then
-    echo "TRIP_UPDATES_URL set to $TRIP_UPDATES_URL, setting trip updates URL in data-sources.xml"
+# Google map related environment variables
+ENTERPRISE_ACTA_WEBAPP_XML_FILE="./config/onebusaway-enterprise-acta-webapp-data-sources.xml"
+BEAN_ID="configurationServiceClient"
+LOCAL_JSON_FILE="/oba/tmp/config.json"
+mkdir -p $(dirname "$LOCAL_JSON_FILE")
+if [ -z "$GOOGLE_MAPS_API_KEY" ] && [ -z "$GOOGLE_MAPS_CLIENT_ID" ] && [ -z "$GOOGLE_MAPS_CHANNEL_ID" ]; then
+    echo "No Google Maps related environment variables are set. Removing element from data-sources.xml"
     xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "tripUpdatesUrl" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='tripUpdatesUrl']" -t attr -n "value" -v "${TRIP_UPDATES_URL}" \
-        ${DATA_FEDERATION_XML_FILE}
-fi
-if [ -n "$VEHICLE_POSITIONS_URL" ]; then
-    echo "VEHICLE_POSITIONS_URL set to $VEHICLE_POSITIONS_URL, setting vehicle positions URL in data-sources.xml"
+        -d "//${NAMESPACE_PREFIX}:bean[@id=${BEAN_ID}]" \
+        ${ENTERPRISE_ACTA_WEBAPP_XML_FILE}
+else
+    echo "Google Maps related environment variables are set. Setting them in data-sources.xml"
+    touch "$LOCAL_JSON_FILE"
+    echo '{"config":[]}' > "$LOCAL_JSON_FILE"
     xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "vehiclePositionsUrl" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='vehiclePositionsUrl']" -t attr -n "value" -v "${VEHICLE_POSITIONS_URL}" \
-        ${DATA_FEDERATION_XML_FILE}
-fi
-if [ -n "$ALERTS_URL" ]; then
-    echo "ALERTS_URL set to $ALERTS_URL, setting alerts URL in data-sources.xml"
-    xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "alertsUrl" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='alertsUrl']" -t attr -n "value" -v "${ALERTS_URL}" \
-        ${DATA_FEDERATION_XML_FILE}
-fi
-if [ -n "$REFRESH_INTERVAL" ]; then
-    echo "REFRESH_INTERVAL set to $REFRESH_INTERVAL, setting refresh interval in data-sources.xml"
-    xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "refreshInterval" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='refreshInterval']" -t attr -n "value" -v "${REFRESH_INTERVAL}" \
-        ${DATA_FEDERATION_XML_FILE}
-fi
-if [ -n "$AGENCY_ID" ]; then
-    echo "AGENCY_ID set to $AGENCY_ID, setting agency ID in data-sources.xml"
-    xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "agencyId" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='agencyId']" -t attr -n "value" -v "${AGENCY_ID}" \
-        ${DATA_FEDERATION_XML_FILE}
-fi
+        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "constructor-arg" -v "" \
+        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/constructor-arg[not(@type)]" -t attr -n "type" -v "java.lang.String" \
+        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/constructor-arg[@type='java.lang.String']" -t attr -n "value" -v "/var/lib/oba/config.json" \
+        ${ENTERPRISE_ACTA_WEBAPP_XML_FILE}
 
-# Check if the GTFS_RT authentication header is set
-if [ -n "$FEED_API_KEY" ] && [ -n "$FEED_API_VALUE" ]; then
-    echo "FEED_API_KEY and FEED_API_VALUE set to $FEED_API_KEY and $FEED_API_VALUE, setting auth header in data-sources.xml"
-    xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']" -t elem -n "property" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[not(@name)]" -t attr -n "name" -v "headersMap" \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']" -t elem -n "map" -v "" \
-        -s "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map" -t elem -n "entry" -v "" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map/entry" -t attr -n "key" -v "${FEED_API_KEY}" \
-        -i "//${NAMESPACE_PREFIX}:bean[@id='${BEAN_ID}']/property[@name='headersMap']/map/entry" -t attr -n "value" -v "${FEED_API_VALUE}" \
-        ${DATA_FEDERATION_XML_FILE}
+    # Avoid read and write same file in one pipe to avoid race condition
+    TMP_JSON_FILE="./config/tmp.json"
+    touch "$TMP_JSON_FILE"
+    if [ -n "$GOOGLE_MAPS_API_KEY" ]; then
+        cat "$LOCAL_JSON_FILE" | jq '.config += [{"component": "display", "key": "display.googleMapsApiKey", "value": "'"$GOOGLE_MAPS_API_KEY"'"}]' > "$TMP_JSON_FILE"
+        mv "$TMP_JSON_FILE" "$LOCAL_JSON_FILE"
+    fi
+    if [ -n "$GOOGLE_MAPS_CLIENT_ID" ]; then
+        cat "$LOCAL_JSON_FILE" | jq '.config += [{"component": "display", "key": "display.googleMapsClientId", "value": "'"$GOOGLE_MAPS_CLIENT_ID"'"}]' > "$TMP_JSON_FILE"
+        mv "$TMP_JSON_FILE" "$LOCAL_JSON_FILE"
+    fi
+    if [ -n "$GOOGLE_MAPS_CHANNEL_ID" ]; then
+        cat "$LOCAL_JSON_FILE" | jq '.config += [{"component": "display", "key": "display.googleMapsChannelId", "value": "'"$GOOGLE_MAPS_CHANNEL_ID"'"}]' > "$TMP_JSON_FILE"
+        mv "$TMP_JSON_FILE" "$LOCAL_JSON_FILE"
+    fi
 fi
