@@ -25,11 +25,21 @@ ENV FEED_API_KEY=${FEED_API_KEY}
 ARG FEED_API_VALUE
 ENV FEED_API_VALUE=${FEED_API_VALUE}
 
+# Google Maps related variables
+ARG GOOGLE_MAPS_API_KEY
+ENV GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+
+ARG GOOGLE_MAPS_CHANNEL_ID
+ENV GOOGLE_MAPS_CHANNEL_ID=${GOOGLE_MAPS_CHANNEL_ID}
+
+ARG GOOGLE_MAPS_CLIENT_ID
+ENV GOOGLE_MAPS_CLIENT_ID=${GOOGLE_MAPS_CLIENT_ID}
+
 WORKDIR /oba
 COPY bootstrap.sh .
 COPY ./config ./config
 RUN chmod +x bootstrap.sh
-RUN apk update && apk add --no-cache bash && apk add --no-cache xmlstarlet
+RUN apk update && apk add --no-cache bash jq && apk add --no-cache xmlstarlet
 RUN ./bootstrap.sh
 
 
@@ -88,6 +98,7 @@ WORKDIR /oba/webapps/onebusaway-enterprise-acta-webapp
 RUN cp /oba/libs/onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
-COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY --from=builder /oba/config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
+COPY --from=builder /oba/tmp/ /var/lib/oba/
