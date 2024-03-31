@@ -129,3 +129,62 @@ Then you can connect to it programmatically using `mysql`:
 ```bash
 mysql -u oba_user -p -h localhost:3306
 ```
+
+### Using Google Maps
+
+#### Prerequisites
+
+- Have a valid Google Cloud Platform (GCP) account.
+- Create a project on GCP and enable the Maps JavaScript API for it.
+- Create an API key for your project. [See how to create an API key](https://cloud.google.com/docs/authentication/api-keys).
+- If there is a rate limit error while using the test API key, it means you have reached the maximum usage limit for that key, you need to generate a new API key.
+
+#### Configuring Google Maps
+
+You'll need to set the following environment variables:
+
+- `GOOGLE_MAPS_API_KEY`: Your Google Maps API key.
+- `GOOGLE_MAPS_CLIENT_ID`: (Optional) Required if you are using the Google Maps Premium Plan.
+- `GOOGLE_MAPS_CHANNEL_ID`: (Optional) A channel ID that helps identify the source of API requests for analytics and reporting purposes.
+
+#### Docker Configuration
+
+If using Docker Compose:
+
+1.Modify the 'docker-compose.yml' file like this:
+
+```yaml
+services:
+  oba-app:
+    build:
+      args:
+        - GOOGLE_MAPS_API_KEY=<YOUR_KEY_HERE>
+        - GOOGLE_MAPS_CHANNEL_ID=<YOUR_CHANNEL_ID_HERE>
+        - GOOGLE_MAPS_CLIENT_ID=<YOUR_CLIENT_ID_HERE>
+```
+
+2.Use the following command to rebuild and start the oba-app service:
+
+```bash
+docker-compose build oba-app
+docker-compose up -d oba-app
+```
+
+
+If deployed in Kubernetes environment:
+
+1.Use the kubectl set env command to set new environment variables,
+make sure you replace deployment/oba-app with the actual name of your deployment:
+
+```bash
+kubectl set env deployment/oba-app GOOGLE_MAPS_API_KEY=<YOUR_KEY_HERE> \
+    GOOGLE_MAPS_CHANNEL_ID=<YOUR_CHANNEL_ID_HERE> \
+    GOOGLE_MAPS_CLIENT_ID=<YOUR_CLIENT_ID_HERE>
+```
+
+2.Use the following command to rebuild and start the oba app service:
+
+```bash
+kubectl rollout restart deployment/oba-app
+```
+
