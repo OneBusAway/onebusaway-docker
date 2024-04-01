@@ -156,17 +156,15 @@ If using Docker Compose:
 ```yaml
 services:
   oba-app:
-    build:
-      args:
+    environment:
         - GOOGLE_MAPS_API_KEY=<YOUR_KEY_HERE>
         - GOOGLE_MAPS_CHANNEL_ID=<YOUR_CHANNEL_ID_HERE>
         - GOOGLE_MAPS_CLIENT_ID=<YOUR_CLIENT_ID_HERE>
 ```
 
-2.Use the following command to rebuild and start the oba-app service:
+2.Use the following command to start the oba-app service:
 
 ```bash
-docker-compose build oba-app
 docker-compose up -d oba-app
 ```
 
