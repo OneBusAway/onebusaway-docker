@@ -1,5 +1,7 @@
 # OneBusAway v2 Docker Packaging
 
+<a href="https://hub.docker.com/u/opentransitsoftwarefoundation"><img alt="Official Docker images" src="https://img.shields.io/badge/Docker_Hub-images-green?logo=docker"></a> <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/onebusaway/onebusaway-docker/test.yaml?branch=main">
+
 This repository contains scripts and configuration for building version 2 of the
 [OneBusAway Application Suite](https://github.com/OneBusAway/onebusaway-application-modules)
 for use with [Docker](https://www.docker.com/).
