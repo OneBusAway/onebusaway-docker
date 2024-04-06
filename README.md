@@ -1,4 +1,4 @@
-# OneBusAway v2 Docker Packaging
+# OneBusAway Docker Images
 
 <a href="https://hub.docker.com/u/opentransitsoftwarefoundation"><img alt="Official Docker images" src="https://img.shields.io/badge/Docker_Hub-images-green?logo=docker"></a> <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/onebusaway/onebusaway-docker/test.yaml?branch=main">
 
