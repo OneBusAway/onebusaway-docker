@@ -30,13 +30,11 @@ services:
       - oba_database
     build:
       context: ./oba
-      # For test only, remove in production
-      args:
-        - TEST_API_KEY=test
     environment:
       - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
       - JDBC_USER=oba_user
       - JDBC_PASSWORD=oba_password
+      - TEST_API_KEY=test # For test only, remove in production
     volumes:
       # Share the host's `bundle` directory
       # with the filesystem of the OBA service.

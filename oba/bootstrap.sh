@@ -1,9 +1,15 @@
 #!/bin/bash
 
-WEBAPP_API_XML_FILE="./config/onebusaway-api-webapp-data-sources.xml"
+WEBAPP_API_XML_FILE="$CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml"
 NAMESPACE_PREFIX="x"
 NAMESPACE_URI="http://www.springframework.org/schema/beans"
 BEAN_ID="testAPIKey"
+
+# For users who want to configure the data-sources.xml file themselves
+if [ -n "$USER_CONFIGURED" ]; then
+    echo "USER_CONFIGURED is set, you should create your own configuration file, Aborting..."
+    exit 0
+fi
 
 # Check if the TEST_API_KEY environment variable is set
 if [ -n "$TEST_API_KEY" ]; then
@@ -22,7 +28,7 @@ else
         ${WEBAPP_API_XML_FILE}
 fi
 
-DATA_FEDERATION_XML_FILE="./config/onebusaway-transit-data-federation-webapp-data-sources.xml"
+DATA_FEDERATION_XML_FILE="$CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml"
 BEAN_ID="gtfsRT"
 # Check if GTFS-Rt related environment variables are set
 if [ -z "$TRIP_UPDATES_URL" ] && [ -z "$VEHICLE_POSITIONS_URL" ] && [ -z "$ALERTS_URL" ]; then
@@ -88,9 +94,9 @@ else
 fi
 
 # Google map related environment variables
-ENTERPRISE_ACTA_WEBAPP_XML_FILE="./config/onebusaway-enterprise-acta-webapp-data-sources.xml"
+ENTERPRISE_ACTA_WEBAPP_XML_FILE="$CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp/WEB-INF/classes/data-sources.xml"
 BEAN_ID="configurationServiceClient"
-LOCAL_JSON_FILE="/oba/tmp/config.json"
+LOCAL_JSON_FILE="/var/lib/oba/config.json"
 mkdir -p $(dirname "$LOCAL_JSON_FILE")
 if [ -z "$GOOGLE_MAPS_API_KEY" ] && [ -z "$GOOGLE_MAPS_CLIENT_ID" ] && [ -z "$GOOGLE_MAPS_CHANNEL_ID" ]; then
     echo "No Google Maps related environment variables are set. Removing element from data-sources.xml"
@@ -108,7 +114,7 @@ else
         ${ENTERPRISE_ACTA_WEBAPP_XML_FILE}
 
     # Avoid read and write same file in one pipe to avoid race condition
-    TMP_JSON_FILE="./config/tmp.json"
+    TMP_JSON_FILE="./tmp.json"
     touch "$TMP_JSON_FILE"
     if [ -n "$GOOGLE_MAPS_API_KEY" ]; then
         cat "$LOCAL_JSON_FILE" | jq '.config += [{"component": "display", "key": "display.googleMapsApiKey", "value": "'"$GOOGLE_MAPS_API_KEY"'"}]' > "$TMP_JSON_FILE"
