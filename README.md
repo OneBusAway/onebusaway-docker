@@ -78,6 +78,23 @@ You can find the latest published Docker images on Docker Hub:
     * `FEED_API_KEY` - If your GTFS-RT API requires you to pass an authentication header, you can represent the key portion of it by specifying this value.
     * `FEED_API_VALUE` - If your GTFS-RT API requires you to pass an authentication header, you can represent the value portion of it by specifying this value.
 
+The `GTFS-RT` and `Google Map` related variables will be handled by the `oba/bootstrap.sh` script, which will set the config files for the OBA API webapp. If you want to use your own config files, you could set `USER_CONFIGURED=1` in the `oba_app` service in `docker-compose.yml` to skip `bootstrap.sh` and write your config file in the container.
+```yaml
+  oba_app:
+    container_name: oba_app
+    depends_on:
+      - oba_database
+    build:
+      context: ./oba
+    environment:
+      # database configs are read from environment variables
+      - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
+      - JDBC_USER=oba_user
+      - JDBC_PASSWORD=oba_password
+      # skip bootstrap.sh and use user-configured config files
+      - USER_CONFIGURED=1
+```
+
 You will also need to create a transit data bundle from a GTFS Zip file. This needs more documentation, but this README does a decent job of outlining the process. The only tricky part is that you need to get it into your running container. Currently, we recommend building it locally, uploading the contents of the `./bundle` directory to S3 or another publicly accessible website, and then downloading it into your container. Obviously, this needs some improvement.
 
 ### Deploy to Render
