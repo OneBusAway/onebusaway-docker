@@ -8,6 +8,15 @@ ARG UID=1000
 ARG GROUP=oba_group
 ARG USER=oba_user
 
+RUN apt-get update && apt-get install -y \
+    jq \
+    magic-wormhole \
+    supervisor \
+    unzip \
+    xmlstarlet \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN groupadd -g $GID $GROUP && \
     useradd -d /home/$USER -u $UID -m -s /bin/bash -g $GROUP $USER && \
     chown -R $USER:$GROUP $CATALINA_HOME && \
@@ -55,7 +64,6 @@ COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/class
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
 
-RUN apt-get update && apt-get install -y xmlstarlet jq supervisor&& apt-get clean
 COPY bootstrap.sh /oba/bootstrap.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod +x /oba/bootstrap.sh
