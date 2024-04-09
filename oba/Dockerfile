@@ -64,6 +64,8 @@ COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/class
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
 
+RUN rm -rf /oba/libs
+
 COPY bootstrap.sh /oba/bootstrap.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod +x /oba/bootstrap.sh
