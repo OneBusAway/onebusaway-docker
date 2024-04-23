@@ -67,6 +67,8 @@ You can find the latest published Docker images on Docker Hub:
   * `JDBC_URL` - The JDBC connection URL for your MySQL database.
   * `JDBC_USER` - The username for your MySQL database.
   * `JDBC_PASSWORD` - The password for your MySQL database.
+* GTFS (Optional, required only when using `oba_app` independently)
+  * `GTFS_URL` - The URL to the GTFS feed you want to use.
 * GTFS-RT Support (Optional)
   * `ALERTS_URL` - Service Alerts URL for GTFS-RT.
   * `TRIP_UPDATES_URL` - Trip Updates URL for GTFS-RT.
@@ -91,6 +93,8 @@ The `GTFS-RT` and `Google Map` related variables will be handled by the `oba/boo
       - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
       - JDBC_USER=oba_user
       - JDBC_PASSWORD=oba_password
+      # change this to your GTFS url
+      - GTFS_URL=https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip
       # skip bootstrap.sh and use user-configured config files
       - USER_CONFIGURED=1
 ```
