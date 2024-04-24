@@ -5,6 +5,21 @@ NAMESPACE_PREFIX="x"
 NAMESPACE_URI="http://www.springframework.org/schema/beans"
 BEAN_ID="testAPIKey"
 
+# Build bundle inside the container
+if [ -n "$GTFS_URL" ]; then
+    echo "GTFS_URL is set, building bundle..."
+    echo "OBA Bundle Builder Starting"
+    echo "GTFS_URL: $GTFS_URL"
+    echo "OBA Version: $OBA_VERSION"
+    mkdir -p /bundle
+    wget -O /bundle/gtfs.zip "$GTFS_URL"
+    cd /bundle \
+        && java -Xss4m -Xmx3g \
+            -jar /oba/tools/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar \
+            ./gtfs.zip \
+            .
+fi
+
 # For users who want to configure the data-sources.xml file themselves
 if [ -n "$USER_CONFIGURED" ]; then
     echo "USER_CONFIGURED is set, you should create your own configuration file, Aborting..."
@@ -29,6 +44,7 @@ else
 fi
 
 DATA_FEDERATION_XML_FILE="$CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml"
+DATA_SOURCE_CLASS="org.onebusaway.transit_data_federation.impl.realtime.gtfs_realtime.GtfsRealtimeSource"
 BEAN_ID="gtfsRT"
 # Check if GTFS-Rt related environment variables are set
 if [ -z "$TRIP_UPDATES_URL" ] && [ -z "$VEHICLE_POSITIONS_URL" ] && [ -z "$ALERTS_URL" ]; then
