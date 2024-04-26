@@ -71,6 +71,10 @@ RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
 
 RUN rm -rf /oba/libs
 
+# Change work directory first to delete `oba/webapps` directory
+WORKDIR /usr/local/tomcat
+RUN rm -rf /oba/webapps
+
 COPY bootstrap.sh /oba/bootstrap.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod +x /oba/bootstrap.sh
