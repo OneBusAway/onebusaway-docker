@@ -10,6 +10,8 @@ services:
     healthCheckPath: /onebusaway-api-webapp/api/where/current-time.json?key=org.onebusaway.iphone
     autoDeploy: false
     envVars:
+      - key: TZ
+        sync: false
       - key: GTFS_URL
         sync: false
       - key: VEHICLE_POSITIONS_URL
