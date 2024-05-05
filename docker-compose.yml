@@ -35,6 +35,8 @@ services:
       - JDBC_USER=oba_user
       - JDBC_PASSWORD=oba_password
       - TEST_API_KEY=test # For test only, remove in production
+      - TZ=America/New_York
+
     volumes:
       # Share the host's `bundle` directory
       # with the filesystem of the OBA service.

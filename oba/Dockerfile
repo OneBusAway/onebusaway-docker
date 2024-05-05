@@ -1,6 +1,7 @@
 FROM tomcat:8.5.98-jdk11-temurin
 
 ENV CATALINA_HOME /usr/local/tomcat
+ENV TZ=America/New_York
 ARG OBA_VERSION=2.4.18-cs
 ENV OBA_VERSION=$OBA_VERSION
 
@@ -13,10 +14,14 @@ RUN apt-get update && apt-get install -y \
     jq \
     magic-wormhole \
     supervisor \
+    tzdata \
     unzip \
     xmlstarlet \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Set the configured time zone
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 RUN groupadd -g $GID $GROUP && \
     useradd -d /home/$USER -u $UID -m -s /bin/bash -g $GROUP $USER && \
