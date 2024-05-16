@@ -3,7 +3,7 @@ services:
     name: OneBusAway API Server
     runtime: image
     image:
-      url: docker.io/opentransitsoftwarefoundation/onebusaway-api-webapp:2.4.18-cs-v1.2.0
+      url: docker.io/opentransitsoftwarefoundation/onebusaway-api-webapp:2.4.18-cs-v1.3.0
     region: oregon
     plan: standard
     numInstances: 1
