@@ -70,6 +70,7 @@ You can find the latest published Docker images on Docker Hub:
 * GTFS (Optional, required only when using `oba_app` independently)
   * `GTFS_URL` - The URL to the GTFS feed you want to use.
 * GTFS-RT Support (Optional)
+  * `TZ` - The timezone for the server. Ensure that the server's timezone matches the timezone specified in your static GTFS `agency.txt` file. The timezone format is the IANA standard, and [a full list of timezones can be found on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
   * `ALERTS_URL` - Service Alerts URL for GTFS-RT.
   * `TRIP_UPDATES_URL` - Trip Updates URL for GTFS-RT.
   * `VEHICLE_POSITIONS_URL` - Vehicle Positions URL for GTFS-RT.
@@ -79,8 +80,8 @@ You can find the latest published Docker images on Docker Hub:
     * Example: Specifying `FEED_API_KEY` = `X-API-KEY` and `FEED_API_VALUE` = `12345` will result in `X-API-KEY: 12345` being passed on every call to your GTFS-RT URLs.
     * `FEED_API_KEY` - If your GTFS-RT API requires you to pass an authentication header, you can represent the key portion of it by specifying this value.
     * `FEED_API_VALUE` - If your GTFS-RT API requires you to pass an authentication header, you can represent the value portion of it by specifying this value.
-* Miscellaneous
-  * `TZ` - The timezone for the server, ensure that the server's timezone matches the timezone of `GTFS` Route. For instance, if the routes are in New York, the server should be set to `America/New_York`.
+
+
 
 The `GTFS-RT` and `Google Map` related variables will be handled by the `oba/bootstrap.sh` script, which will set the config files for the OBA API webapp. If you want to use your own config files, you could set `USER_CONFIGURED=1` in the `oba_app` service in `docker-compose.yml` to skip `bootstrap.sh` and write your config file in the container.
 ```yaml
