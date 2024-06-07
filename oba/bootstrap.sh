@@ -1,10 +1,5 @@
 #!/bin/bash
 
-WEBAPP_API_XML_FILE="$CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml"
-NAMESPACE_PREFIX="x"
-NAMESPACE_URI="http://www.springframework.org/schema/beans"
-BEAN_ID="testAPIKey"
-
 # Build bundle inside the container
 if [ -n "$GTFS_URL" ]; then
     echo "GTFS_URL is set, building bundle..."
@@ -26,6 +21,12 @@ if [ -n "$USER_CONFIGURED" ]; then
     exit 0
 fi
 
+WEBAPP_API_XML_FILE="$CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml"
+NAMESPACE_PREFIX="x"
+NAMESPACE_URI="http://www.springframework.org/schema/beans"
+BEAN_ID="testAPIKey"
+# Idempotence
+cp "$WEBAPP_API_XML_FILE.bak" "$WEBAPP_API_XML_FILE"
 # Check if the TEST_API_KEY environment variable is set
 if [ -n "$TEST_API_KEY" ]; then
   # If it is set, then add the API key to the data-sources.xml file
@@ -46,6 +47,8 @@ fi
 DATA_FEDERATION_XML_FILE="$CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml"
 DATA_SOURCE_CLASS="org.onebusaway.transit_data_federation.impl.realtime.gtfs_realtime.GtfsRealtimeSource"
 BEAN_ID="gtfsRT"
+# Idempotence
+cp "$DATA_FEDERATION_XML_FILE.bak" "$DATA_FEDERATION_XML_FILE"
 # Check if GTFS-Rt related environment variables are set
 if [ -z "$TRIP_UPDATES_URL" ] && [ -z "$VEHICLE_POSITIONS_URL" ] && [ -z "$ALERTS_URL" ]; then
     echo "No GTFS-RT related environment variables are set. Removing element from data-sources.xml"
@@ -113,6 +116,8 @@ fi
 ENTERPRISE_ACTA_WEBAPP_XML_FILE="$CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp/WEB-INF/classes/data-sources.xml"
 BEAN_ID="configurationServiceClient"
 LOCAL_JSON_FILE="/var/lib/oba/config.json"
+# Idempotence
+cp "$ENTERPRISE_ACTA_WEBAPP_XML_FILE.bak" "$ENTERPRISE_ACTA_WEBAPP_XML_FILE"
 mkdir -p $(dirname "$LOCAL_JSON_FILE")
 if [ -z "$GOOGLE_MAPS_API_KEY" ] && [ -z "$GOOGLE_MAPS_CLIENT_ID" ] && [ -z "$GOOGLE_MAPS_CHANNEL_ID" ]; then
     echo "No Google Maps related environment variables are set. Removing element from data-sources.xml"
@@ -121,6 +126,8 @@ if [ -z "$GOOGLE_MAPS_API_KEY" ] && [ -z "$GOOGLE_MAPS_CLIENT_ID" ] && [ -z "$GO
         ${ENTERPRISE_ACTA_WEBAPP_XML_FILE}
 else
     echo "Google Maps related environment variables are set. Setting them in data-sources.xml"
+    # Indempotence
+    rm -f "$LOCAL_JSON_FILE"
     touch "$LOCAL_JSON_FILE"
     echo '{"config":[]}' > "$LOCAL_JSON_FILE"
     xmlstarlet ed -L -N ${NAMESPACE_PREFIX}=${NAMESPACE_URI} \
