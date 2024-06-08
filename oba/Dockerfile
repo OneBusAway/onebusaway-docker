@@ -54,7 +54,7 @@ WORKDIR /oba/webapps/onebusaway-transit-data-federation-webapp
 RUN cp /oba/libs/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war
-COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml.bak
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-transit-data-federation-webapp $CATALINA_HOME/webapps
 
@@ -62,7 +62,7 @@ WORKDIR /oba/webapps/onebusaway-api-webapp
 RUN cp /oba/libs/onebusaway-api-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-api-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-api-webapp-${OBA_VERSION}.war
-COPY ./config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY ./config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml.bak
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-api-webapp $CATALINA_HOME/webapps
 
@@ -70,7 +70,7 @@ WORKDIR /oba/webapps/onebusaway-enterprise-acta-webapp
 RUN cp /oba/libs/onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
-COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml
+COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml.bak
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
 
