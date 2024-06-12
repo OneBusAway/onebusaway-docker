@@ -1,0 +1,60 @@
+version: "3"
+
+services:
+  oba_bundler:
+    build: ./bundler
+    volumes:
+      - ./bundle:/bundle
+    environment:
+      - GTFS_URL
+
+  oba_database:
+    image: mysql:8.3
+    container_name: oba_database
+    environment:
+      MYSQL_ROOT_PASSWORD: Ins3cure!
+      MYSQL_DATABASE: oba_database
+      MYSQL_USER: oba_user
+      MYSQL_PASSWORD: oba_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - type: volume
+        source: mysql-data
+        target: /var/lib/mysql
+    restart: always
+
+  oba_app:
+    image: opentransitsoftwarefoundation/onebusaway-api-webapp:${OBA_VERSION:-latest}
+    container_name: oba_app
+    depends_on:
+      - oba_database
+    environment:
+      - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
+      - JDBC_USER=oba_user
+      - JDBC_PASSWORD=oba_password
+      - TEST_API_KEY
+      - TZ
+      - VEHICLE_POSITIONS_URL
+      - TRIP_UPDATES_URL
+      - ALERTS_URL
+      - REFRESH_INTERVAL=30
+      - AGENCY_ID
+      - GOOGLE_MAPS_API_KEY
+
+    volumes:
+      # Share the host"s `bundle` directory
+      # with the filesystem of the OBA service.
+      - ./bundle:/bundle
+    ports:
+      # Access the webapp on your host machine at a path like
+      # http://localhost:8080/onebusaway-api-webapp/api/where/agency/${YOUR_AGENCY}.json?key=TEST
+      - "8080:8080"
+    # restart: always
+    labels:
+      caddy: "${DOMAIN}"
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+
+volumes:
+  mysql-data:
+  caddy-data: {}
