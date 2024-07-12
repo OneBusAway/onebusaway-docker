@@ -35,7 +35,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for services to be up
-        run: sleep 5
+        run: sleep 30
 
       - name: Test the services
         run: |
@@ -57,7 +57,8 @@ jobs:
         run: docker-compose -f docker-compose.standalone.yml up -d
 
       - name: Wait for services to be up
-        run: sleep 5
+        # leave time to download and process the GTFS data
+        run: sleep 60
 
       - name: Test the services
         run: |
