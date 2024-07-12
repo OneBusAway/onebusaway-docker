@@ -17,8 +17,12 @@ RUN apt-get update && apt-get install -y \
     tzdata \
     unzip \
     xmlstarlet \
+    python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install supervisord-dependent-startup
+RUN apt remove -y python3-pip
 
 # Set the configured time zone
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
