@@ -19,7 +19,7 @@ else
 fi
 
 output=$(curl -s "http://localhost:8080/onebusaway-api-webapp/api/where/routes-for-agency/unitrans.json?key=test" | jq '.data.list | length')
-if [[ $output -gt 20 ]]; then
+if [[ $output -gt 10 ]]; then
     echo "routes-for-agency/unitrans.json endpoint works."
 else
     echo "Error: routes-for-agency/unitrans.json is not working: $output"

@@ -8,7 +8,7 @@ on:
 
 jobs:
   image:
-    name: Test Docker Image
+    name: Build Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
         run: docker buildx build --load -t oba-image:latest ./oba
 
   services:
-    name: Test Services
+    name: Services with Bundler
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,7 +35,30 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for services to be up
-        run: sleep 5
+        run: sleep 30
+
+      - name: Test the services
+        run: |
+          chmod +x ./bin/validate.sh
+          ./bin/validate.sh
+
+      - name: Docker Compose down
+        if: always()
+        run: docker-compose down
+
+  services_standalone:
+    name: Services standalone
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Docker Compose up
+        run: docker-compose -f docker-compose.standalone.yml up -d
+
+      - name: Wait for services to be up
+        # leave time to download and process the GTFS data
+        run: sleep 60
 
       - name: Test the services
         run: |
