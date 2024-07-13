@@ -50,6 +50,7 @@ jobs:
           context: ${{ matrix.context }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
+          # for versioning, use the git sha
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:latest
             ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:${{ github.sha }}
