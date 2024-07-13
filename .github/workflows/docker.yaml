@@ -52,8 +52,8 @@ jobs:
           push: true
           # for versioning, use the git sha
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:latest
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:${{ github.sha }}
+            ghcr.io/onebusaway/${{ matrix.name }}:latest
+            ghcr.io/onebusaway/${{ matrix.name }}:${{ github.sha }}
 
   buildx-release:
     if: ${{ github.event_name == 'release' }}
