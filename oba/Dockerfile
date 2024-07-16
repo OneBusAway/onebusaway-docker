@@ -2,7 +2,7 @@ FROM tomcat:8.5.98-jdk11-temurin
 
 ENV CATALINA_HOME /usr/local/tomcat
 ENV TZ=America/New_York
-ARG OBA_VERSION=2.4.18-cs
+ARG OBA_VERSION=2.5.12-cs
 ENV OBA_VERSION=$OBA_VERSION
 
 ARG GID=1000
@@ -54,6 +54,8 @@ WORKDIR /oba/tools
 RUN wget "https://repo.camsys-apps.com/releases/org/onebusaway/onebusaway-transit-data-federation-builder/${OBA_VERSION}/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar"
 
 # Tomcat Configuration
+COPY ./config/context.xml $CATALINA_HOME/conf/context.xml
+
 WORKDIR /oba/webapps/onebusaway-transit-data-federation-webapp
 RUN cp /oba/libs/onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-transit-data-federation-webapp-${OBA_VERSION}.war

@@ -15,7 +15,7 @@ if [ -n "$GTFS_URL" ]; then
             .
 fi
 
-# For users who want to configure the data-sources.xml file themselves
+# For users who want to configure the data-sources.xml file and database themselves
 if [ -n "$USER_CONFIGURED" ]; then
     echo "USER_CONFIGURED is set, you should create your own configuration file, Aborting..."
     exit 0
@@ -151,4 +151,19 @@ else
         cat "$LOCAL_JSON_FILE" | jq '.config += [{"component": "display", "key": "display.googleMapsChannelId", "value": "'"$GOOGLE_MAPS_CHANNEL_ID"'"}]' > "$TMP_JSON_FILE"
         mv "$TMP_JSON_FILE" "$LOCAL_JSON_FILE"
     fi
+fi
+
+CONTEXT_XML_FILE="$CATALINA_HOME/conf/context.xml"
+# only update the parameters, therefore is impotent
+if [ -n "$JDBC_URL" ]; then
+    echo "JDBC_URL set to $JDBC_URL, setting in context.xml"
+    xmlstarlet ed -L -u "//Resource[@name='jdbc/appDB']/@url" -v "$JDBC_URL" ${CONTEXT_XML_FILE}
+fi
+if [ -n "$JDBC_USER" ]; then
+    echo "JDBC_URL set to $JDBC_USER, setting in context.xml"
+    xmlstarlet ed -L -u "//Resource[@name='jdbc/appDB']/@username" -v "$JDBC_USER" ${CONTEXT_XML_FILE}
+fi
+if [ -n "$JDBC_PASSWORD" ]; then
+    echo "JDBC_URL set to $JDBC_PASSWORD, setting in context.xml"
+    xmlstarlet ed -L -u "//Resource[@name='jdbc/appDB']/@password" -v "$JDBC_PASSWORD" ${CONTEXT_XML_FILE}
 fi
