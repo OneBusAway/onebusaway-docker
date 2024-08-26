@@ -1,0 +1,9 @@
+apiVersion: v2
+name: one-bus-away
+description: A Helm chart for installing OneBusAway
+
+type: application
+
+version: 0.1.0
+
+appVersion: "2.5.12"

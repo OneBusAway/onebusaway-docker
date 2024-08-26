@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oba-configs
+  namespace: {{ .Release.Namespace }}
+data:
+  GTFS_URL: {{ .Values.gtfsUrl | required | quote }}

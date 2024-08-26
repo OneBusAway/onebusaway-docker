@@ -1,0 +1,17 @@
+# Database configuration
+database:
+  image: mysql:8.3
+  databaseName: oba_database
+  user: oba_user
+  port: 3306
+
+# Application configuration
+app:
+  bundlerImage: opentransitsoftwarefoundation/onebusaway-bundle-builder:2.5.12-cs-v1.0.0
+  appImage: opentransitsoftwarefoundation/onebusaway-api-webapp:2.5.12-cs-v1.0.0
+  port: 8080
+  googleMaps:
+    enabled: false
+
+# GTFS URL
+gtfsURL:

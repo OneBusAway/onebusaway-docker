@@ -110,7 +110,9 @@ You will also need to create a transit data bundle from a GTFS Zip file. This ne
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/oneBusAway/onebusaway-docker/)
 
-### Running in Kubernetes
+## Running in Kubernetes
+
+### a) Using kubernetes resource yaml files (and locally built images):
 
 #### Creating the docker images
 
@@ -156,7 +158,49 @@ Then you can connect to it programmatically using `mysql`:
 mysql -u oba_user -p -h localhost:3306
 ```
 
-### Using Google Maps
+### b) Using helm charts:
+
+#### Installation
+
+1. Create a namespace for the OneBusAway deployment:
+    ```bash
+    kubectl create namespace oba
+    ```
+2. Create a secret for sensitive data:
+    ```bash
+    kubectl create secret generic oba-secrets --from-literal=MYSQL_ROOT_PASSWORD=root_password --from-literal=JDBC_PASSWORD=oba_password -n oba
+    ```
+    _Note: Additional keys may be required if using Google Maps._
+3. Create a file (eg: `oba-values.yaml`) containing your configurations:
+    ```yaml
+    gtfsURL: "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip"
+    ```
+4. Install the OneBusAway helm chart:
+    ```bash
+    helm install oba-server ./helm/one-bus-away -n oba -f oba-values.yaml
+    ```
+
+#### Using oba app on localhost
+
+You can portforward the oba app to your localhost using:
+```bash
+kubectl port-forward deploy/oba-app-deployment -n oba 8080:8080
+```
+_Note: Sample apis can be found in `bin/validate.sh`_
+
+#### Inspecting the database
+
+1. You can portforward the service to your localhost using:
+    ```bash
+    kubectl port-forward service/oba-database -n oba 3306:3306
+    ```
+2. Then you can connect to it programmatically using `mysql`:
+    ```bash
+    mysql -u oba_user -p -h localhost:3306
+    ```
+   _Note: If the above command fails, try `mysql -u oba_user -p --host=127.0.0.1 --port=3306` instead._ 
+
+## Using Google Maps
 
 #### Prerequisites
 

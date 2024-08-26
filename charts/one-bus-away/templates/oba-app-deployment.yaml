@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oba-app-deployment
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oba-app
+  template:
+    metadata:
+      labels:
+        app: oba-app
+    spec:
+      initContainers:
+      - name: oba-bundler
+        image: {{ .Values.app.bundlerImage }}
+        env:
+        - name: GTFS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: oba-configs
+              key: GTFS_URL
+        volumeMounts:
+        - mountPath: /bundle
+          name: bundle-volume
+      containers:
+      - name: oba-app
+        image: {{ .Values.app.appImage }}
+        env:
+        - name: JDBC_URL
+          value: jdbc:mysql://oba-database.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.database.port }}/{{ .Values.database.databaseName }}
+        - name: JDBC_USER
+          value: {{ .Values.database.user }}
+        - name: JDBC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: oba-secrets
+              key: JDBC_PASSWORD
+        {{ if .Values.app.googleMaps.enabled }}
+        - name: GOOGLE_MAPS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: oba-secrets
+              key: GOOGLE_MAPS_API_KEY
+        - name: GOOGLE_MAPS_CHANNEL_ID
+          valueFrom:
+            secretKeyRef:
+              name: oba-secrets
+              key: GOOGLE_MAPS_CHANNEL_ID
+              optional: true
+        - name: GOOGLE_MAPS_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: oba-secrets
+              key: GOOGLE_MAPS_CLIENT_ID
+              optional: true
+        {{ end }}
+        ports:
+        - containerPort: {{ .Values.app.port }}
+        volumeMounts:
+        - mountPath: /bundle
+          name: bundle-volume
+      volumes:
+      - name: bundle-volume
+        emptyDir: {}
