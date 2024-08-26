@@ -1,6 +1,8 @@
 apiVersion: v2
 name: one-bus-away
 description: A Helm chart for installing OneBusAway
+home: https://onebusaway.org
+icon: https://developer.onebusaway.org/images/oba-logo.png
 
 type: application
 
