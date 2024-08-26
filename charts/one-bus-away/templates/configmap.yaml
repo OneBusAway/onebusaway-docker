@@ -4,4 +4,4 @@ metadata:
   name: oba-configs
   namespace: {{ .Release.Namespace }}
 data:
-  GTFS_URL: {{ .Values.gtfsUrl | required | quote }}
+  GTFS_URL: {{ .Values.gtfsURL | required "gtfsURL is required !!!" | quote }}
