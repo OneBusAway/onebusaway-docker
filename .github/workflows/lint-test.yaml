@@ -39,4 +39,11 @@ jobs:
       if: steps.list-changed.outputs.changed == 'true'
 
     - name: Run chart-testing (install)
-      run: ct install --target-branch main
+      run: |
+        # Create namespace
+        kubectl create ns oba
+
+        # Create necessary secret
+        kubectl create secret generic oba-secrets --from-literal=MYSQL_ROOT_PASSWORD=root_password --from-literal=JDBC_PASSWORD=oba_password -n oba
+
+        ct install --target-branch main --namespace oba
