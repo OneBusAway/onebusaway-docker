@@ -113,7 +113,7 @@ else
 fi
 
 # Google map related environment variables
-ENTERPRISE_ACTA_WEBAPP_XML_FILE="$CATALINA_HOME/webapps/onebusaway-enterprise-acta-webapp/WEB-INF/classes/data-sources.xml"
+ENTERPRISE_ACTA_WEBAPP_XML_FILE="$CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml"
 BEAN_ID="configurationServiceClient"
 LOCAL_JSON_FILE="/var/lib/oba/config.json"
 # Idempotence
