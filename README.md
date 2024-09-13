@@ -10,12 +10,22 @@ for use with [Docker](https://www.docker.com/).
 
 To build bundles and run the webapp server with your own GTFS feed, use the [Docker Compose](https://docs.docker.com/compose/) services in this repository.
 
+### Building the app server
+
+The app server currently uses Maven artifacts from GitHub's Maven package registry, which unfortunately requires authentication. This is provided in the form of a pair of environment variables that must be supplied when building the app server image:
+
+```bash
+PAT_USERNAME_FOR_GH=GITHUB_USERNAME PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN docker compose build oba_app
+```
+
+You can get a classic PAT here: https://github.com/settings/tokens.
+
 ### Building bundles
 
 To build a bundle, use the `oba_bundler` service:
 
 ```bash
-GTFS_URL=https://www.soundtransit.org/GTFS-rail/40_gtfs.zip docker-compose up oba_bundler
+GTFS_URL=https://www.soundtransit.org/GTFS-rail/40_gtfs.zip docker compose up oba_bundler
 ```
 
 This process will create all necessary bundle files and metadata, and all will be accessible in your local repo's `./bundle` directory.
@@ -23,7 +33,7 @@ This process will create all necessary bundle files and metadata, and all will b
 When the GTFS_URL is unspecified, `oba_bundler` will download and use the GTFS data for Davis, CA's Unitrans service. This can be used with the `bin/validate.sh` script to verify that the stack is working correctly.
 
 ```bash
-docker-compose up oba_bundler
+docker compose up oba_bundler
 ```
 
 ### Running the OneBusAway server
@@ -31,7 +41,7 @@ docker-compose up oba_bundler
 Once you have a built OBA bundle inside `./bundle`, you can run the OBA server and make it accessible on your host machine with:
 
 ```bash
-docker-compose up oba_app
+docker compose up oba_app
 ```
 
 You will then have three webapps available:
@@ -40,11 +50,11 @@ You will then have three webapps available:
   - an example call could be to `http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST`, which should show metadata about the agency you loaded
   - the test/demo API key is automatically handled in `oba/bootstrap.sh`, you can change it by setting the `TEST_API_KEY` environment variables in the `oba_app` service in `docker-compose.yml`
 
-When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker-compose down -v` and then `docker-compose up oba_app` to refresh the Docker containers and services.
+When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker compose down -v` and then `docker compose up oba_app` to refresh the Docker containers and services.
 
 ### Inspecting the database
 
-The MySQL database Docker Compose service should remain up after a call of `docker-compose up oba_app`. Otherwise, you can always invoke it using `docker-compose up oba_database`.
+The MySQL database Docker Compose service should remain up after a call of `docker compose up oba_app`. Otherwise, you can always invoke it using `docker compose up oba_database`.
 
 A database port is open to your host machine, so you can connect to it programmatically using `mysql`:
 
@@ -191,7 +201,7 @@ services:
 2.Use the following command to start the oba-app service:
 
 ```bash
-docker-compose up -d oba-app
+docker compose up -d oba-app
 ```
 
 

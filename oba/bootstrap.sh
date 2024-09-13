@@ -10,7 +10,7 @@ if [ -n "$GTFS_URL" ]; then
     wget -O /bundle/gtfs.zip "$GTFS_URL"
     cd /bundle \
         && java -Xss4m -Xmx3g \
-            -jar /oba/tools/onebusaway-transit-data-federation-builder-${OBA_VERSION}-withAllDependencies.jar \
+            -jar /oba/libs/onebusaway-transit-data-federation-builder-withAllDependencies.jar \
             ./gtfs.zip \
             .
 fi
