@@ -72,13 +72,13 @@ COPY ./config/onebusaway-api-webapp-data-sources.xml ./WEB-INF/classes/data-sour
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
 RUN mv /oba/webapps/onebusaway-api-webapp $CATALINA_HOME/webapps
 
-WORKDIR /oba/webapps/onebusaway-enterprise-acta-webapp
+WORKDIR /oba/webapps/ROOT
 RUN cp /oba/libs/onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war .
 RUN jar xvf onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
 RUN rm onebusaway-enterprise-acta-webapp-${OBA_VERSION}.war
 COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml ./WEB-INF/classes/data-sources.xml.bak
 RUN cp $CATALINA_HOME/lib/mysql-connector-j-8.3.0.jar ./WEB-INF/lib
-RUN mv /oba/webapps/onebusaway-enterprise-acta-webapp $CATALINA_HOME/webapps
+RUN mv /oba/webapps/ROOT $CATALINA_HOME/webapps
 
 RUN rm -rf /oba/libs
 
