@@ -17,12 +17,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      # Split the build into two steps to identify which step fails
       - name: Build bundler image
-        run: docker buildx build --load -t bundler-image:latest ./bundler
+        run: |
+          docker buildx build \
+            --load \
+            -t bundler-image:latest \
+            --build-arg PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
+            --build-arg PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
+            ./bundler
 
       - name: Build oba image
-        run: docker buildx build --load -t oba-image:latest ./oba
+        run: |
+            docker buildx build \
+              --load \
+              -t oba-image:latest \
+              --build-arg PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
+              --build-arg PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
+              ./oba
 
   services:
     name: Services with Bundler
@@ -31,13 +42,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build bundle
+        run: |
+          PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
+          PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
+          docker compose up oba_bundler
+
       - name: Docker Compose up
-        run: docker compose up -d
+        run: |
+          PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
+          PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
+          docker compose up -d
 
       - name: Wait for services to be up
         run: sleep 30
 
       - name: Test the services
+        timeout-minutes: 10
         run: |
           chmod +x ./bin/validate.sh
           ./bin/validate.sh
@@ -54,13 +75,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Docker Compose up
-        run: docker compose -f docker-compose.standalone.yml up -d
+        run: |
+          PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
+          PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
+          docker compose -f docker-compose.standalone.yml up -d
 
       - name: Wait for services to be up
         # leave time to download and process the GTFS data
         run: sleep 60
 
       - name: Test the services
+        timeout-minutes: 10
         run: |
           chmod +x ./bin/validate.sh
           ./bin/validate.sh

@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   oba_database:
     image: mysql:8.3
@@ -23,12 +21,15 @@ services:
       - oba_database
     build:
       context: ./oba
+      args:
+        - PAT_USERNAME_FOR_GH=${PAT_USERNAME_FOR_GH}
+        - PAT_TOKEN_FOR_GH=${PAT_TOKEN_FOR_GH}
     environment:
       - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
       - JDBC_USER=oba_user
       - JDBC_PASSWORD=oba_password
       - TEST_API_KEY=test # For test only, remove in production
-      - TZ=America/New_York
+      - TZ=America/Los_Angeles
       - GTFS_URL=https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip
 
     ports:
