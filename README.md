@@ -6,16 +6,31 @@ This repository contains scripts and configuration for building version 2 of the
 [OneBusAway Application Suite](https://github.com/OneBusAway/onebusaway-application-modules)
 for use with [Docker](https://www.docker.com/).
 
+## Deploying to a cloud provider?
+
+Check out our [onebusaway-deployment](https://github.com/oneBusAway/onebusaway-deployment) repository, which features OpenTofu (Terraform) IaC configuration for deploying OneBusAway to AWS, Azure, Google Cloud Platform, Render, Kubernetes, and other platforms.
+
+### Deploy to Render
+
+[Render](https://www.render.com) is an easy-to-use Platform-as-a-Service (PaaS) provider. You can host OneBusAway on Render by either manually configuring it or by clicking the button below.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/oneBusAway/onebusaway-docker/)
+
+### Running in Kubernetes
+
+[Learn more about running OBA in Kubernetes in the dedicated README](k8s-readme.md).
+
 ## Running locally
 
 To build bundles and run the webapp server with your own GTFS feed, use the [Docker Compose](https://docs.docker.com/compose/) services in this repository.
 
 ### Building the app server
 
-The app server currently uses Maven artifacts from GitHub's Maven package registry, which unfortunately requires authentication. This is provided in the form of a pair of environment variables that must be supplied when building the app server image:
+The app server and bundle builder use Maven artifacts from GitHub's Maven package registry, which unfortunately requires authentication. This is provided in the form of a pair of environment variables that must be supplied when building the app server image:
 
 ```bash
-PAT_USERNAME_FOR_GH=GITHUB_USERNAME PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN docker compose build oba_app
+PAT_USERNAME_FOR_GH=GITHUB_USERNAME \ PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
+docker compose build oba_app
 ```
 
 You can get a classic PAT here: https://github.com/settings/tokens.
@@ -25,7 +40,9 @@ You can get a classic PAT here: https://github.com/settings/tokens.
 To build a bundle, use the `oba_bundler` service:
 
 ```bash
-GTFS_URL=https://www.soundtransit.org/GTFS-rail/40_gtfs.zip docker compose up oba_bundler
+GTFS_URL=https://www.soundtransit.org/GTFS-rail/40_gtfs.zip \
+PAT_USERNAME_FOR_GH=GITHUB_USERNAME \ PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
+docker compose up oba_bundler
 ```
 
 This process will create all necessary bundle files and metadata, and all will be accessible in your local repo's `./bundle` directory.
@@ -38,17 +55,18 @@ docker compose up oba_bundler
 
 ### Running the OneBusAway server
 
-Once you have a built OBA bundle inside `./bundle`, you can run the OBA server and make it accessible on your host machine with:
+Once you have built an OBA bundle inside `./bundle`, you can run the OBA server and make it accessible on your host machine with:
 
 ```bash
 docker compose up oba_app
 ```
 
-You will then have three webapps available:
+You will then have three web apps available:
 
-- API, hosted at `http://localhost:8080/onebusaway-api-webapp/api?key=TEST`
-  - an example call could be to `http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST`, which should show metadata about the agency you loaded
-  - the test/demo API key is automatically handled in `oba/bootstrap.sh`, you can change it by setting the `TEST_API_KEY` environment variables in the `oba_app` service in `docker-compose.yml`
+* onebusaway-api-webapp, hosted at http://localhost:8080/onebusaway-api-webapp
+  * Example API call: http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST
+* onebusaway-enterprise-acta-webapp, a user-facing web app: http://localhost:8080
+* onebusaway-transit-data-federation-webapp, which does the heavy lifting of exposing the transit data bundle to other services: http://localhost:8080/onebusaway-transit-data-federation-webapp
 
 When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker compose down -v` and then `docker compose up oba_app` to refresh the Docker containers and services.
 
@@ -112,60 +130,6 @@ The `GTFS-RT` and `Google Map` related variables will be handled by the `oba/boo
       - USER_CONFIGURED=1
 ```
 
-You will also need to create a transit data bundle from a GTFS Zip file. This needs more documentation, but this README does a decent job of outlining the process. The only tricky part is that you need to get it into your running container. Currently, we recommend building it locally, uploading the contents of the `./bundle` directory to S3 or another publicly accessible website, and then downloading it into your container. Obviously, this needs some improvement.
-
-### Deploy to Render
-
-[Render](https://www.render.com) is an easy-to-use Platform-as-a-Service (PaaS) provider. You can host OneBusAway on Render by either manually configuring it or by clicking the button below.
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/oneBusAway/onebusaway-docker/)
-
-### Running in Kubernetes
-
-#### Creating the docker images
-
-1. Build the bundler image:
-
-```bash
-docker build ./bundler -t oba/bundler:test
-```
-
-2. Build the app image:
-
-```bash
-docker build ./oba -t oba/app:test
-```
-
-#### Creating the Kubernetes resources:
-
-Apply the Kubernetes resources in oba.yaml
-
-```bash
-kubectl apply -f oba.yaml
-```
-
-The YAML file deploys the OneBusAway application and a MySQL database within a dedicated oba namespace in Kubernetes. It also sets up a secret for sensitive data and a ConfigMap for GTFS data URL, while exposing the database as a service for other pods to access.
-
-You can portforward the oba app to your localhost using:
-
-```bash
-kubectl port-forward deploy/oba-app-deployment -n oba 8080:8080
-```
-
-#### Inspecting the database
-
-You can portforward the service to your localhost using:
-
-```bash
-kubectl port-forward service/oba-database -n oba 3306:3306
-```
-
-Then you can connect to it programmatically using `mysql`:
-
-```bash
-mysql -u oba_user -p -h localhost:3306
-```
-
 ### Using Google Maps
 
 #### Prerequisites
@@ -202,22 +166,4 @@ services:
 
 ```bash
 docker compose up -d oba-app
-```
-
-
-If deployed in Kubernetes environment:
-
-1.Use the kubectl set env command to set new environment variables,
-make sure you replace deployment/oba-app with the actual name of your deployment:
-
-```bash
-kubectl set env deployment/oba-app GOOGLE_MAPS_API_KEY=<YOUR_KEY_HERE> \
-    GOOGLE_MAPS_CHANNEL_ID=<YOUR_CHANNEL_ID_HERE> \
-    GOOGLE_MAPS_CLIENT_ID=<YOUR_CLIENT_ID_HERE>
-```
-
-2.Use the following command to rebuild and start the oba app service:
-
-```bash
-kubectl rollout restart deployment/oba-app
 ```
