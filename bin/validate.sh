@@ -50,6 +50,15 @@ else
     exit 1
 fi
 
+output=$(curl -s "http://localhost:8080/")
+if echo "$output" | grep -qi "onebusaway enterprise"; then
+    echo "Success: webapp found on http://localhost:8080"
+else
+    echo "Error: webapp NOT found on http://localhost:8080"
+    echo $output
+    exit 1
+fi
+
 # todo: add support for arrivals-and-departures-for-stop endpoint.
 # however, it doesn't seem that the unitrans_22182 stop has arrivals and departures on the weekend, so we'll need
 # something else to test with. However, for now, this is still a great step forward.
