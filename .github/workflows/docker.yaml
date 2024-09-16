@@ -54,6 +54,9 @@ jobs:
           tags: |
             ghcr.io/onebusaway/${{ matrix.name }}:latest
             ghcr.io/onebusaway/${{ matrix.name }}:${{ github.sha }}
+          build-args: |
+            PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }}
+            PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }}
 
   buildx-release:
     if: ${{ github.event_name == 'release' }}
@@ -98,3 +101,6 @@ jobs:
           push: true
           tags: |
             opentransitsoftwarefoundation/${{ matrix.name }}:${{ env.IMAGE_TAG }}
+          build-args: |
+            PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }}
+            PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }}
