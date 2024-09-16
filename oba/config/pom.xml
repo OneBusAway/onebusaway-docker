@@ -51,5 +51,10 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>${MYSQL_CONNECTOR_VERSION}</version>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${POSTGRESQL_CONNECTOR_VERSION}</version>
+        </dependency>
     </dependencies>
 </project>

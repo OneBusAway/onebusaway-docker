@@ -33,8 +33,8 @@
               maxTotal="100"
               maxIdle="30"
               maxWaitMillis="10000"
-              username="${JDBC_USER}"
-              password="${JDBC_PASSWORD}"
-              driverClassName="com.mysql.cj.jdbc.Driver"
-              url="${JDBC_URL}"/>
+              username="{{ JDBC_USER }}"
+              password="{{ JDBC_PASSWORD }}"
+              driverClassName="{{ JDBC_DRIVER }}"
+              url="{{ JDBC_URL }}" />
 </Context>
