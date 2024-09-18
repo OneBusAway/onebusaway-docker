@@ -9,10 +9,20 @@ ENV OBA_VERSION=${OBA_VERSION}
 
 ARG MYSQL_CONNECTOR_VERSION=8.4.0
 ENV MYSQL_CONNECTOR_VERSION=${MYSQL_CONNECTOR_VERSION}
+
+ARG POSTGRESQL_CONNECTOR_VERSION=42.7.4
+ENV POSTGRESQL_CONNECTOR_VERSION=${POSTGRESQL_CONNECTOR_VERSION}
+
 ARG PAT_USERNAME_FOR_GH
 ARG PAT_TOKEN_FOR_GH
 
-RUN apt-get update && apt-get install -y maven
+RUN apt-get update && \
+    apt-get install -y maven golang
+
+# Build the template renderer, which is called hbs_renderer
+WORKDIR /oba/template_renderer
+COPY ./config/template_renderer .
+RUN go build -o hbs_renderer
 
 # Start configuring OBA
 WORKDIR /oba/libs
@@ -50,12 +60,13 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     tzdata \
     unzip \
-    xmlstarlet \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install supervisord-dependent-startup
 RUN apt remove -y python3-pip
+
+COPY --from=builder /oba/template_renderer/hbs_renderer /usr/local/bin/hbs_renderer
 
 # Set the configured time zone
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
@@ -77,6 +88,18 @@ COPY --from=builder \
     /oba/libs/onebusaway-transit-data-federation-builder-withAllDependencies.jar .
 
 ##########
+# Copy over config files
+##########
+
+WORKDIR /oba/config
+
+COPY ./config/context.xml.hbs .
+COPY ./config/googlemaps.config.json.hbs .
+COPY ./config/onebusaway-api-webapp-data-sources.xml.hbs .
+COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml.hbs .
+COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml.hbs .
+
+##########
 # Configure OBA Server
 ##########
 
@@ -89,15 +112,22 @@ WORKDIR $CATALINA_HOME/webapps
 COPY --from=builder \
      --chown=oba_user:oba_group \
      /oba/libs/onebusaway-api-webapp.war .
+
 RUN mkdir onebusaway-api-webapp && \
     cd onebusaway-api-webapp && \
     jar xvf ../onebusaway-api-webapp.war && \
     rm ../onebusaway-api-webapp.war
+
 COPY --from=builder \
      --chown=oba_user:oba_group \
      /oba/libs/mysql-connector-j.jar onebusaway-api-webapp/WEB-INF/lib/
-COPY ./config/onebusaway-api-webapp-data-sources.xml \
-     $CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml.bak
+
+COPY --from=builder \
+     --chown=oba_user:oba_group \
+     /oba/libs/postgresql.jar onebusaway-api-webapp/WEB-INF/lib/
+
+COPY ./config/onebusaway-api-webapp-data-sources.xml.hbs \
+     $CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml.hbs
 
 ##########
 # Configure onebusaway-enterprise-acta-webapp as ROOT (i.e. the path `/`)
@@ -117,8 +147,13 @@ COPY --from=builder \
      /oba/libs/mysql-connector-j.jar \
      $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
 
-COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml \
-     $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml.bak
+COPY --from=builder \
+     --chown=oba_user:oba_group \
+     /oba/libs/postgresql.jar \
+     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
+
+COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml.hbs \
+     $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml.hbs
 
 
 # TODO: when/where/why is this needed?
@@ -133,23 +168,24 @@ RUN chmod 755 /opt/oba/logs
 COPY --from=builder \
     --chown=oba_user:oba_group \
     /oba/libs/onebusaway-transit-data-federation-webapp.war .
+
 RUN mkdir onebusaway-transit-data-federation-webapp && \
     cd onebusaway-transit-data-federation-webapp && \
     jar xvf ../onebusaway-transit-data-federation-webapp.war && \
     rm ../onebusaway-transit-data-federation-webapp.war
+
 COPY --from=builder \
     --chown=oba_user:oba_group \
     /oba/libs/mysql-connector-j.jar \
     onebusaway-transit-data-federation-webapp/WEB-INF/lib/
-COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml \
-     $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml.bak
 
-##########
-# Tomcat Configuration
-##########
+COPY --from=builder \
+    --chown=oba_user:oba_group \
+    /oba/libs/postgresql.jar \
+    onebusaway-transit-data-federation-webapp/WEB-INF/lib/
 
-WORKDIR $CATALINA_HOME
-COPY --chown=oba_user:oba_group ./config/context.xml ./conf/
+COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml.hbs \
+     $CATALINA_HOME/webapps/onebusaway-transit-data-federation-webapp/WEB-INF/classes/data-sources.xml.hbs
 
 ##########
 # Clean up
@@ -166,4 +202,5 @@ COPY bootstrap.sh /oba/bootstrap.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod +x /oba/bootstrap.sh
 
+# CMD ["tail", "-f", "/dev/null"]
 CMD ["supervisord", "-n"]

@@ -46,3 +46,7 @@ copy_and_rename_artifact \
 copy_and_rename_artifact \
     "com.mysql:mysql-connector-j:${MYSQL_CONNECTOR_VERSION}:jar" \
     "mysql-connector-j"
+
+copy_and_rename_artifact \
+    "org.postgresql:postgresql:${POSTGRESQL_CONNECTOR_VERSION}:jar" \
+    "postgresql"

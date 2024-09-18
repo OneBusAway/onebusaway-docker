@@ -3,7 +3,7 @@ services:
     name: OneBusAway API Server
     runtime: image
     image:
-      url: docker.io/opentransitsoftwarefoundation/onebusaway-api-webapp:2.5.12-cs-v1.0.0
+      url: docker.io/opentransitsoftwarefoundation/onebusaway-api-webapp:2.5.13-otsf-v1.0.1
     region: oregon
     plan: standard
     numInstances: 1
@@ -33,6 +33,8 @@ services:
       - key: JDBC_PASSWORD
         sync: false
       - key: JDBC_URL
+        sync: false
+      - key: JDBC_DRIVER
         sync: false
       - key: PORT
         value: 8080

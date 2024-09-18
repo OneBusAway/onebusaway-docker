@@ -72,7 +72,7 @@ When done using this web server, you can use the shell-standard `^C` to exit out
 
 ### Inspecting the database
 
-The MySQL database Docker Compose service should remain up after a call of `docker compose up oba_app`. Otherwise, you can always invoke it using `docker compose up oba_database`.
+The Docker Compose database service should remain up after a call of `docker compose up oba_app`. Otherwise, you can always invoke it using `docker compose up oba_database`.
 
 A database port is open to your host machine, so you can connect to it programmatically using `mysql`:
 
@@ -92,9 +92,10 @@ You can find the latest published Docker images on Docker Hub:
 ### Deployment Parameters
 
 * Database
-  * `JDBC_URL` - The JDBC connection URL for your MySQL database.
-  * `JDBC_USER` - The username for your MySQL database.
-  * `JDBC_PASSWORD` - The password for your MySQL database.
+  * `JDBC_URL` - The JDBC connection URL for your MySQL or PostgreSQL database.
+  * `JDBC_DRIVER` - The JDBC driver class name: `com.mysql.cj.jdbc.Driver` or `org.postgresql.Driver`
+  * `JDBC_USER` - The username for your database.
+  * `JDBC_PASSWORD` - The password for your database.
 * GTFS (Optional, required only when using `oba_app` independently)
   * `GTFS_URL` - The URL to the GTFS feed you want to use.
 * GTFS-RT Support (Optional)
