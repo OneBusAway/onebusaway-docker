@@ -66,8 +66,6 @@ hbs_renderer -input "$FEDERATION_XML_SOURCE" \
 WEBAPP_XML_SOURCE="/oba/config/onebusaway-enterprise-acta-webapp-data-sources.xml.hbs"
 WEBAPP_XML_DESTINATION="$CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml"
 
-mkdir -p $(dirname "$MAP_CONFIG_FILE")
-
 if [ -z "$GOOGLE_MAPS_API_KEY" ] && [ -z "$GOOGLE_MAPS_CLIENT_ID" ] && [ -z "$GOOGLE_MAPS_CHANNEL_ID" ]; then
     echo "No Google Maps related environment variables are set. Removing element from data-sources.xml"
     GOOGLE_MAPS_CONFIGURED=""
@@ -78,8 +76,10 @@ else
     MAP_CONFIG_SOURCE="/oba/config/googlemaps.config.json.hbs"
     MAP_CONFIG_DESTINATION="/var/lib/oba/config.json"
 
+    mkdir -p $(dirname "$MAP_CONFIG_DESTINATION")
+
     hbs_renderer -input "$MAP_CONFIG_SOURCE" \
-                 -json '{"GOOGLE_MAPS_API_KEY": "'$GOOGLE_MAPS_API_KEY'", "GOOGLE_MAPS_CLIENT_ID": "'$GOOGLE_MAPS_CLIENT_ID'", "GOOGLE_MAPS_CHANNEL_ID": "'$GOOGLE_MAPS_CHANNEL_ID'"}' \
+                 -json '{"GOOGLE_MAPS_CONFIGURED": "'$GOOGLE_MAPS_CONFIGURED'", "GOOGLE_MAPS_API_KEY": "'$GOOGLE_MAPS_API_KEY'", "GOOGLE_MAPS_CLIENT_ID": "'$GOOGLE_MAPS_CLIENT_ID'", "GOOGLE_MAPS_CHANNEL_ID": "'$GOOGLE_MAPS_CHANNEL_ID'"}' \
                  -output "$MAP_CONFIG_DESTINATION"
 fi
 
