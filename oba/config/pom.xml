@@ -30,12 +30,6 @@
         </dependency>
         <dependency>
             <groupId>org.onebusaway</groupId>
-            <artifactId>onebusaway-enterprise-acta-webapp</artifactId>
-            <version>${OBA_VERSION}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.onebusaway</groupId>
             <artifactId>onebusaway-transit-data-federation-webapp</artifactId>
             <version>${OBA_VERSION}</version>
             <type>war</type>

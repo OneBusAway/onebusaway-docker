@@ -50,7 +50,6 @@ services:
       - ALERTS_URL
       - REFRESH_INTERVAL=30
       - AGENCY_ID
-      - GOOGLE_MAPS_API_KEY
 
     volumes:
       # Share the host"s `bundle` directory
