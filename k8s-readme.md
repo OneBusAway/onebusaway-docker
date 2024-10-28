@@ -43,23 +43,3 @@ Then you can connect to it programmatically using `mysql`:
 ```bash
 mysql -u oba_user -p -h localhost:3306
 ```
-
-#### Google Maps
-
-
-If deployed in Kubernetes environment:
-
-1. Use the kubectl set env command to set new environment variables,
-make sure you replace deployment/oba-app with the actual name of your deployment:
-
-```bash
-kubectl set env deployment/oba-app GOOGLE_MAPS_API_KEY=<YOUR_KEY_HERE> \
-    GOOGLE_MAPS_CHANNEL_ID=<YOUR_CHANNEL_ID_HERE> \
-    GOOGLE_MAPS_CLIENT_ID=<YOUR_CLIENT_ID_HERE>
-```
-
-2. Use the following command to rebuild and start the oba app service:
-
-```bash
-kubectl rollout restart deployment/oba-app
-```

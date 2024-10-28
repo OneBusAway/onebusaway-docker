@@ -29,7 +29,8 @@ To build bundles and run the webapp server with your own GTFS feed, use the [Doc
 The app server and bundle builder use Maven artifacts from GitHub's Maven package registry, which unfortunately requires authentication. This is provided in the form of a pair of environment variables that must be supplied when building the app server image:
 
 ```bash
-PAT_USERNAME_FOR_GH=GITHUB_USERNAME \ PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
+PAT_USERNAME_FOR_GH=GITHUB_USERNAME \
+PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
 docker compose build oba_app
 ```
 
@@ -41,7 +42,8 @@ To build a bundle, use the `oba_bundler` service:
 
 ```bash
 GTFS_URL=https://www.soundtransit.org/GTFS-rail/40_gtfs.zip \
-PAT_USERNAME_FOR_GH=GITHUB_USERNAME \ PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
+PAT_USERNAME_FOR_GH=GITHUB_USERNAME \
+PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
 docker compose up oba_bundler
 ```
 
@@ -61,11 +63,10 @@ Once you have built an OBA bundle inside `./bundle`, you can run the OBA server 
 docker compose up oba_app
 ```
 
-You will then have three web apps available:
+You will then have two web apps available:
 
 * onebusaway-api-webapp, hosted at http://localhost:8080/onebusaway-api-webapp
   * Example API call: http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST
-* onebusaway-enterprise-acta-webapp, a user-facing web app: http://localhost:8080
 * onebusaway-transit-data-federation-webapp, which does the heavy lifting of exposing the transit data bundle to other services: http://localhost:8080/onebusaway-transit-data-federation-webapp
 
 When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker compose down -v` and then `docker compose up oba_app` to refresh the Docker containers and services.
@@ -112,7 +113,7 @@ You can find the latest published Docker images on Docker Hub:
 
 
 
-The `GTFS-RT` and `Google Map` related variables will be handled by the `oba/bootstrap.sh` script, which will set the config files for the OBA API webapp. If you want to use your own config files, you could set `USER_CONFIGURED=1` in the `oba_app` service in `docker-compose.yml` to skip `bootstrap.sh` and write your config file in the container.
+The `GTFS-RT` related variables will be handled by the `oba/bootstrap.sh` script, which will set the config files for the OBA API webapp. If you want to use your own config files, you could set `USER_CONFIGURED=1` in the `oba_app` service in `docker-compose.yml` to skip `bootstrap.sh` and write your config file in the container.
 ```yaml
   oba_app:
     container_name: oba_app
@@ -129,42 +130,4 @@ The `GTFS-RT` and `Google Map` related variables will be handled by the `oba/boo
       - GTFS_URL=https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip
       # skip bootstrap.sh and use user-configured config files
       - USER_CONFIGURED=1
-```
-
-### Using Google Maps
-
-#### Prerequisites
-
-- Have a valid Google Cloud Platform (GCP) account.
-- Create a project on GCP and enable the Maps JavaScript API for it.
-- Create an API key for your project. [See how to create an API key](https://cloud.google.com/docs/authentication/api-keys).
-- If there is a rate limit error while using the test API key, it means you have reached the maximum usage limit for that key, you need to generate a new API key.
-
-#### Configuring Google Maps
-
-You'll need to set the following environment variables:
-
-- `GOOGLE_MAPS_API_KEY`: Your Google Maps API key.
-- `GOOGLE_MAPS_CLIENT_ID`: (Optional) Required if you are using the Google Maps Premium Plan.
-- `GOOGLE_MAPS_CHANNEL_ID`: (Optional) A channel ID that helps identify the source of API requests for analytics and reporting purposes.
-
-#### Docker Configuration
-
-If using Docker Compose:
-
-1.Modify the 'docker-compose.yml' file like this:
-
-```yaml
-services:
-  oba-app:
-    environment:
-        - GOOGLE_MAPS_API_KEY=<YOUR_KEY_HERE>
-        - GOOGLE_MAPS_CHANNEL_ID=<YOUR_CHANNEL_ID_HERE>
-        - GOOGLE_MAPS_CLIENT_ID=<YOUR_CLIENT_ID_HERE>
-```
-
-2.Use the following command to start the oba-app service:
-
-```bash
-docker compose up -d oba-app
 ```

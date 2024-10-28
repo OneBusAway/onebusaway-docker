@@ -32,10 +32,6 @@ copy_and_rename_artifact \
     "onebusaway-api-webapp"
 
 copy_and_rename_artifact \
-    "org.onebusaway:onebusaway-enterprise-acta-webapp:${OBA_VERSION}:war" \
-    "onebusaway-enterprise-acta-webapp"
-
-copy_and_rename_artifact \
     "org.onebusaway:onebusaway-transit-data-federation-webapp:${OBA_VERSION}:war" \
     "onebusaway-transit-data-federation-webapp"
 

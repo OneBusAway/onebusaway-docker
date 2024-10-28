@@ -94,9 +94,7 @@ COPY --from=builder \
 WORKDIR /oba/config
 
 COPY ./config/context.xml.hbs .
-COPY ./config/googlemaps.config.json.hbs .
 COPY ./config/onebusaway-api-webapp-data-sources.xml.hbs .
-COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml.hbs .
 COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml.hbs .
 
 ##########
@@ -129,34 +127,6 @@ COPY --from=builder \
 COPY ./config/onebusaway-api-webapp-data-sources.xml.hbs \
      $CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml.hbs
 
-##########
-# Configure onebusaway-enterprise-acta-webapp as ROOT (i.e. the path `/`)
-##########
-
-COPY --from=builder \
-     --chown=oba_user:oba_group \
-     /oba/libs/onebusaway-enterprise-acta-webapp.war .
-
-RUN mkdir ROOT && \
-    cd ROOT && \
-    jar xvf ../onebusaway-enterprise-acta-webapp.war && \
-    rm ../onebusaway-enterprise-acta-webapp.war
-
-COPY --from=builder \
-     --chown=oba_user:oba_group \
-     /oba/libs/mysql-connector-j.jar \
-     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
-
-COPY --from=builder \
-     --chown=oba_user:oba_group \
-     /oba/libs/postgresql.jar \
-     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
-
-COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml.hbs \
-     $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml.hbs
-
-
-# TODO: when/where/why is this needed?
 RUN mkdir -p /opt/oba/logs
 RUN chown -R oba_user:oba_group /opt/oba/logs
 RUN chmod 755 /opt/oba/logs
