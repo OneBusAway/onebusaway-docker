@@ -70,6 +70,9 @@ jobs:
   services_standalone:
     name: Services standalone
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -89,6 +92,13 @@ jobs:
         run: |
           chmod +x ./bin/validate.sh
           ./bin/validate.sh
+
+      # - name: Breakpoint if tests failed
+      #   if: failure()
+      #   uses: namespacelabs/breakpoint-action@v0
+      #   with:
+      #     duration: 30m
+      #     authorized-users: aaronbrethorst
 
       - name: Docker Compose down
         if: always()

@@ -26,7 +26,7 @@ fi
 #####
 
 API_XML_SOURCE="/oba/config/onebusaway-api-webapp-data-sources.xml.hbs"
-API_XML_DESTINATION="$CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml"
+API_XML_DESTINATION="$CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml"
 
 hbs_renderer -input "$API_XML_SOURCE" \
              -json '{"TEST_API_KEY": "'$TEST_API_KEY'", "JDBC_DRIVER": "'$JDBC_DRIVER'"}' \

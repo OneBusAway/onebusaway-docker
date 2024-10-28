@@ -103,6 +103,15 @@ COPY ./config/onebusaway-transit-data-federation-webapp-data-sources.xml.hbs .
 
 WORKDIR $CATALINA_HOME/webapps
 
+# COPY --from=builder \
+#      --chown=oba_user:oba_group \
+#      /oba/libs/postgresql.jar \
+#      $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
+
+# COPY ./config/onebusaway-enterprise-acta-webapp-data-sources.xml.hbs \
+#      $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/data-sources.xml.hbs
+
+
 ##########
 # Configure onebusaway-api-webapp
 ##########
@@ -111,18 +120,20 @@ COPY --from=builder \
      --chown=oba_user:oba_group \
      /oba/libs/onebusaway-api-webapp.war .
 
-RUN mkdir onebusaway-api-webapp && \
-    cd onebusaway-api-webapp && \
+RUN mkdir ROOT && \
+    cd ROOT && \
     jar xvf ../onebusaway-api-webapp.war && \
     rm ../onebusaway-api-webapp.war
 
 COPY --from=builder \
      --chown=oba_user:oba_group \
-     /oba/libs/mysql-connector-j.jar onebusaway-api-webapp/WEB-INF/lib/
+     /oba/libs/mysql-connector-j.jar \
+     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
 
 COPY --from=builder \
      --chown=oba_user:oba_group \
-     /oba/libs/postgresql.jar onebusaway-api-webapp/WEB-INF/lib/
+     /oba/libs/postgresql.jar \
+     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
 
 COPY ./config/onebusaway-api-webapp-data-sources.xml.hbs \
      $CATALINA_HOME/webapps/onebusaway-api-webapp/WEB-INF/classes/data-sources.xml.hbs
