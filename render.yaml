@@ -7,8 +7,8 @@ services:
     region: oregon
     plan: standard
     numInstances: 1
-    healthCheckPath: /onebusaway-api-webapp/api/where/current-time.json?key=org.onebusaway.iphone
-    autoDeploy: false
+    healthCheckPath: /api/where/current-time.json?key=org.onebusaway.iphone
+    autoDeploy: true
     envVars:
       - key: TZ
         sync: false
@@ -29,16 +29,27 @@ services:
       - key: AGENCY_ID
         sync: false
       - key: JDBC_USER
-        sync: false
+        fromDatabase:
+          name: oba-postgresql
+          property: user
       - key: JDBC_PASSWORD
-        sync: false
+        fromDatabase:
+          name: oba-postgresql
+          property: password
       - key: JDBC_URL
-        sync: false
+        fromDatabase:
+          name: oba-postgresql
+          property: connectionString
       - key: JDBC_DRIVER
-        sync: false
+        value: org.postgresql.Driver
       - key: PORT
         value: 8080
     disk:
       name: Bundle
       mountPath: /bundle
       sizeGB: 1
+
+databases:
+  - name: oba-postgresql
+    databaseName: obadb
+    plan: basic-256mb
