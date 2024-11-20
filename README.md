@@ -65,8 +65,8 @@ docker compose up oba_app
 
 You will then have two web apps available:
 
-* onebusaway-api-webapp, hosted at http://localhost:8080/onebusaway-api-webapp
-  * Example API call: http://localhost:8080/onebusaway-api-webapp/api/where/agencies-with-coverage.json?key=TEST
+* onebusaway-api-webapp, hosted at http://localhost:8080/
+  * Example API call: http://localhost:8080/api/where/agencies-with-coverage.json?key=TEST
 * onebusaway-transit-data-federation-webapp, which does the heavy lifting of exposing the transit data bundle to other services: http://localhost:8080/onebusaway-transit-data-federation-webapp
 
 When done using this web server, you can use the shell-standard `^C` to exit out and turn it off. If issues persist across runs, you can try using `docker compose down -v` and then `docker compose up oba_app` to refresh the Docker containers and services.
