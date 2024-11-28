@@ -29,12 +29,8 @@ To build bundles and run the webapp server with your own GTFS feed, use the [Doc
 The app server and bundle builder use Maven artifacts from GitHub's Maven package registry, which unfortunately requires authentication. This is provided in the form of a pair of environment variables that must be supplied when building the app server image:
 
 ```bash
-PAT_USERNAME_FOR_GH=GITHUB_USERNAME \
-PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
 docker compose build oba_app
 ```
-
-You can get a classic PAT here: https://github.com/settings/tokens.
 
 ### Building bundles
 
@@ -42,8 +38,6 @@ To build a bundle, use the `oba_bundler` service:
 
 ```bash
 GTFS_URL=https://www.soundtransit.org/GTFS-rail/40_gtfs.zip \
-PAT_USERNAME_FOR_GH=GITHUB_USERNAME \
-PAT_TOKEN_FOR_GH=GITHUB_PERSONAL_ACCESS_TOKEN \
 docker compose up oba_bundler
 ```
 

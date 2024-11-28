@@ -4,9 +4,6 @@ services:
   oba_bundler:
     build:
       context: ./bundler
-      args:
-        - PAT_USERNAME_FOR_GH=${PAT_USERNAME_FOR_GH}
-        - PAT_TOKEN_FOR_GH=${PAT_TOKEN_FOR_GH}
     volumes:
       - ./bundle:/bundle
     environment:
@@ -35,9 +32,6 @@ services:
       - oba_database
     build:
       context: ./oba
-      args:
-        - PAT_USERNAME_FOR_GH=${PAT_USERNAME_FOR_GH}
-        - PAT_TOKEN_FOR_GH=${PAT_TOKEN_FOR_GH}
     environment:
       - JDBC_URL=jdbc:mysql://oba_database:3306/oba_database
       - JDBC_DRIVER=com.mysql.cj.jdbc.Driver
