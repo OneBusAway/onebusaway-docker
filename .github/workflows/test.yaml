@@ -22,8 +22,6 @@ jobs:
           docker buildx build \
             --load \
             -t bundler-image:latest \
-            --build-arg PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
-            --build-arg PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
             ./bundler
 
       - name: Build oba image
@@ -31,8 +29,6 @@ jobs:
             docker buildx build \
               --load \
               -t oba-image:latest \
-              --build-arg PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
-              --build-arg PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
               ./oba
 
   services:
@@ -44,14 +40,10 @@ jobs:
 
       - name: Build bundle
         run: |
-          PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
-          PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
           docker compose up oba_bundler
 
       - name: Docker Compose up
         run: |
-          PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
-          PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
           docker compose up -d
 
       - name: Wait for services to be up
@@ -79,8 +71,6 @@ jobs:
 
       - name: Docker Compose up
         run: |
-          PAT_USERNAME_FOR_GH=${{ secrets.PAT_USERNAME_FOR_GH }} \
-          PAT_TOKEN_FOR_GH=${{ secrets.PAT_TOKEN_FOR_GH }} \
           docker compose -f docker-compose.standalone.yml up -d
 
       - name: Wait for services to be up

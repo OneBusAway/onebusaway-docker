@@ -15,22 +15,7 @@
           <id>central</id>
           <url>https://repo1.maven.org/maven2</url>
         </repository>
-        <repository>
-          <id>github</id>
-          <url>https://maven.pkg.github.com/onebusaway/onebusaway-application-modules</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
       </repositories>
     </profile>
   </profiles>
-
-  <servers>
-    <server>
-      <id>github</id>
-      <username>${PAT_USERNAME_FOR_GH}</username>
-      <password>${PAT_TOKEN_FOR_GH}</password>
-    </server>
-  </servers>
 </settings>

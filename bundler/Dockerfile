@@ -7,9 +7,6 @@ FROM tomcat:8.5.100-jdk11-temurin AS builder
 ARG OBA_VERSION=2.5.13-otsf
 ENV OBA_VERSION=${OBA_VERSION}
 
-ARG PAT_USERNAME_FOR_GH
-ARG PAT_TOKEN_FOR_GH
-
 RUN apt-get update && apt-get install -y maven
 
 # Start configuring OBA
