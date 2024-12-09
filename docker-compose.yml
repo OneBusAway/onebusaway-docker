@@ -24,7 +24,7 @@ services:
     restart: always
 
   oba_database_pg:
-    image: postgres:15
+    image: postgres:16
     container_name: oba_database_pg
     environment:
       POSTGRES_USER: oba_user
