@@ -9,7 +9,7 @@ if [ -n "$GTFS_URL" ]; then
     mkdir -p /bundle
     wget -O /bundle/gtfs.zip "$GTFS_URL"
     cd /bundle \
-        && java -Xss4m -Xmx3g \
+        && java -Xss4m -Xmx2g \
             -jar /oba/libs/onebusaway-transit-data-federation-builder-withAllDependencies.jar \
             ./gtfs.zip \
             .
