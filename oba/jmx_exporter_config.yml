@@ -1,0 +1,21 @@
+rules:
+    # Memory Metrics
+    - pattern: "java.lang<type=Memory><>HeapMemoryUsage"
+      name: "jvm_memory_heap_usage"
+      type: GAUGE
+    - pattern: "java.lang<type=Memory><>NonHeapMemoryUsage"
+      name: "jvm_memory_non_heap_usage"
+      type: GAUGE
+    - pattern: "java.lang<type=MemoryPool, name=.*><>Usage"
+      name: "jvm_memory_pool_usage"
+      type: GAUGE
+      labels:
+          pool: "$1"
+
+    # CPU Metrics
+    - pattern: "java.lang<type=OperatingSystem><>ProcessCpuLoad"
+      name: "jvm_cpu_load"
+      type: GAUGE
+    - pattern: "java.lang<type=OperatingSystem><>SystemCpuLoad"
+      name: "jvm_system_cpu_load"
+      type: GAUGE
