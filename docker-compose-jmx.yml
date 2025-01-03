@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+    jmx_exporter:
+        container_name: jmx_exporter
+        build:
+            context: ./oba
+            dockerfile: Dockerfile.jmx
+        ports:
+            - "1234:1234"
+
+        # Uncomment the following section to test with prometheus and the JMX exporter in localhost
+        # networks:
+        #     - monitoring
+# Uncomment the following section to test with prometheus and the JMX exporter in localhost
+# networks:
+#     monitoring:
+#         external: true
