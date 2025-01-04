@@ -1,0 +1,28 @@
+lowercaseOutputLabelNames: true
+lowercaseOutputName: true
+whitelistObjectNames:
+    - "java.lang:type=OperatingSystem"
+    - "java.lang:type=Memory"
+    - "java.lang:type=MemoryPool,name=*"
+blacklistObjectNames: []
+rules:
+    - pattern: "java.lang<type=OperatingSystem><>(committed_virtual_memory|free_physical_memory|free_swap_space|total_physical_memory|total_swap_space)_size:"
+      name: os_$1_bytes
+      type: GAUGE
+      attrNameSnakeCase: true
+    - pattern: 'java.lang<type=OperatingSystem><>((?!process_cpu_time)\w+):'
+      name: os_$1
+      type: GAUGE
+      attrNameSnakeCase: true
+
+    - pattern: "java.lang<type=Memory><>HeapMemoryUsage"
+      name: "jvm_memory_used_bytes"
+      type: GAUGE
+    - pattern: "java.lang<type=Memory><>NonHeapMemoryUsage"
+      name: jvm_memory_non_heap_usage
+      type: GAUGE
+    - pattern: "java.lang<type=MemoryPool, name=.*><>Usage"
+      name: jvm_memory_pool_usage
+      type: GAUGE
+      labels:
+          pool: "$1"
