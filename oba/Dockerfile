@@ -105,8 +105,8 @@ WORKDIR $CATALINA_HOME/webapps
 ##########
 
 COPY --from=builder \
-     --chown=oba_user:oba_group \
-     /oba/libs/onebusaway-api-webapp.war .
+    --chown=oba_user:oba_group \
+    /oba/libs/onebusaway-api-webapp.war .
 
 RUN mkdir ROOT && \
     cd ROOT && \
@@ -114,14 +114,14 @@ RUN mkdir ROOT && \
     rm ../onebusaway-api-webapp.war
 
 COPY --from=builder \
-     --chown=oba_user:oba_group \
-     /oba/libs/mysql-connector-j.jar \
-     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
+    --chown=oba_user:oba_group \
+    /oba/libs/mysql-connector-j.jar \
+    $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
 
 COPY --from=builder \
-     --chown=oba_user:oba_group \
-     /oba/libs/postgresql.jar \
-     $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
+    --chown=oba_user:oba_group \
+    /oba/libs/postgresql.jar \
+    $CATALINA_HOME/webapps/ROOT/WEB-INF/lib/
 
 RUN mkdir -p /opt/oba/logs
 RUN chown -R oba_user:oba_group /opt/oba/logs
@@ -157,9 +157,22 @@ COPY --from=builder \
 RUN apt-get autoremove -y && apt-get clean
 RUN rm -rf /oba/webapps
 
+
+
+# Jmx exporter
+
+RUN mkdir -p /app && \
+    wget -O /app/jmx_prometheus_javaagent.jar https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.19.0/jmx_prometheus_javaagent-0.19.0.jar
+COPY ./jmx_exporter_config.yml /app/jmx_exporter_config.yml
+
+# Set JVM options to include JMX exporter
+ENV JAVA_OPTS="-javaagent:/app/jmx_prometheus_javaagent.jar=1234:/app/jmx_exporter_config.yml"
+
+
 ##########
 # Bootstrapper and Supervisor
 ##########
+
 
 COPY bootstrap.sh /oba/bootstrap.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
