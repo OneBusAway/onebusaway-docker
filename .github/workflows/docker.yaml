@@ -67,8 +67,12 @@ jobs:
           - name: onebusaway-api-webapp
             context: oba
     steps:
-      - name: Compute image tag name
-        run: echo "IMAGE_TAG=$(echo $GITHUB_REF_NAME)" >> $GITHUB_ENV
+      - name: Compute image tag names
+        run: |
+          # Set the full version tag (e.g., 2.5.13-otsf-v5.0.0)
+          echo "IMAGE_TAG=$(echo $GITHUB_REF_NAME)" >> $GITHUB_ENV
+          # Extract the software version (e.g., 2.5.13-otsf) and add -latest
+          echo "LATEST_TAG=$(echo $GITHUB_REF_NAME | sed 's/-v[0-9]\+\.[0-9]\+\.[0-9]\+/-latest/')" >> $GITHUB_ENV
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up QEMU
@@ -98,3 +102,4 @@ jobs:
           push: true
           tags: |
             opentransitsoftwarefoundation/${{ matrix.name }}:${{ env.IMAGE_TAG }}
+            opentransitsoftwarefoundation/${{ matrix.name }}:${{ env.LATEST_TAG }}
